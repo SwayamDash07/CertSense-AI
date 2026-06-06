@@ -1,0 +1,96 @@
+{
+  "certifications": [
+    {
+      "id": "AZ-204",
+      "title": "Developing Solutions for Microsoft Azure",
+      "target_role": "Cloud Engineer",
+      "recommended_hours": 20,
+      "pass_threshold_score": 70,
+      "skills": [
+        "Azure App Service",
+        "Azure Functions",
+        "Blob Storage",
+        "Cosmos DB",
+        "API Management",
+        "Key Vault",
+        "Service Bus",
+        "Event Grid"
+      ],
+      "prerequisites": [],
+      "next_certifications": ["AZ-305"]
+    },
+    {
+      "id": "AZ-400",
+      "title": "Designing and Implementing Microsoft DevOps Solutions",
+      "target_role": "DevOps Engineer",
+      "recommended_hours": 25,
+      "pass_threshold_score": 70,
+      "skills": [
+        "CI/CD Pipelines",
+        "GitHub Actions",
+        "Azure DevOps",
+        "Monitoring and Logging",
+        "Test Planning",
+        "Release Strategies",
+        "Security and Compliance",
+        "Infrastructure as Code"
+      ],
+      "prerequisites": ["AZ-204"],
+      "next_certifications": ["AZ-305", "AZ-500"]
+    },
+    {
+      "id": "DP-203",
+      "title": "Data Engineering on Microsoft Azure",
+      "target_role": "Data Engineer",
+      "recommended_hours": 22,
+      "pass_threshold_score": 70,
+      "skills": [
+        "Azure Data Factory",
+        "Azure Synapse Analytics",
+        "Azure Data Lake",
+        "Stream Analytics",
+        "Delta Lake",
+        "Power BI Integration",
+        "Data Security"
+      ],
+      "prerequisites": [],
+      "next_certifications": ["DP-300", "DP-500"]
+    }
+  ],
+  "roles": [
+    {
+      "id": "cloud-engineer",
+      "title": "Cloud Engineer",
+      "primary_certification": "AZ-204",
+      "secondary_certifications": ["AZ-305"],
+      "avg_study_capacity_hours_per_week": 5
+    },
+    {
+      "id": "devops-engineer",
+      "title": "DevOps Engineer",
+      "primary_certification": "AZ-400",
+      "secondary_certifications": ["AZ-500"],
+      "avg_study_capacity_hours_per_week": 6
+    },
+    {
+      "id": "data-engineer",
+      "title": "Data Engineer",
+      "primary_certification": "DP-203",
+      "secondary_certifications": ["DP-300"],
+      "avg_study_capacity_hours_per_week": 5
+    }
+  ],
+  "readiness_thresholds": {
+    "not_started": 0,
+    "early_stage": 40,
+    "developing": 60,
+    "near_ready": 75,
+    "exam_ready": 85
+  },
+  "study_patterns": {
+    "optimal_daily_hours": 2,
+    "recommended_days_per_week": 5,
+    "checkpoint_frequency_days": 7,
+    "minimum_practice_score_before_exam": 75
+  }
+}

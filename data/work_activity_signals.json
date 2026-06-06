@@ -1,0 +1,68 @@
+[
+  {
+    "employee_id": "EMP-001",
+    "learner_id": "L-1001",
+    "meeting_hours_per_week": 22,
+    "focus_hours_per_week": 10,
+    "preferred_learning_slot": "Morning",
+    "avg_daily_messages": 45,
+    "collaboration_score": 72,
+    "recommended_study_window": "07:00-09:00",
+    "workload_risk": "High"
+  },
+  {
+    "employee_id": "EMP-002",
+    "learner_id": "L-1002",
+    "meeting_hours_per_week": 15,
+    "focus_hours_per_week": 18,
+    "preferred_learning_slot": "Afternoon",
+    "avg_daily_messages": 30,
+    "collaboration_score": 58,
+    "recommended_study_window": "14:00-16:00",
+    "workload_risk": "Low"
+  },
+  {
+    "employee_id": "EMP-003",
+    "learner_id": "L-1003",
+    "meeting_hours_per_week": 12,
+    "focus_hours_per_week": 20,
+    "preferred_learning_slot": "Morning",
+    "avg_daily_messages": 22,
+    "collaboration_score": 45,
+    "recommended_study_window": "08:00-10:00",
+    "workload_risk": "Low"
+  },
+  {
+    "employee_id": "EMP-004",
+    "learner_id": "L-1004",
+    "meeting_hours_per_week": 28,
+    "focus_hours_per_week": 6,
+    "preferred_learning_slot": "Evening",
+    "avg_daily_messages": 60,
+    "collaboration_score": 88,
+    "recommended_study_window": "18:00-20:00",
+    "workload_risk": "Critical"
+  },
+  {
+    "employee_id": "EMP-005",
+    "learner_id": "L-1005",
+    "meeting_hours_per_week": 16,
+    "focus_hours_per_week": 15,
+    "preferred_learning_slot": "Morning",
+    "avg_daily_messages": 35,
+    "collaboration_score": 61,
+    "recommended_study_window": "07:30-09:30",
+    "workload_risk": "Medium"
+  },
+  {
+    "employee_id": "EMP-006",
+    "learner_id": "L-1006",
+    "meeting_hours_per_week": 20,
+    "focus_hours_per_week": 12,
+    "preferred_learning_slot": "Afternoon",
+    "avg_daily_messages": 40,
+    "collaboration_score": 66,
+    "recommended_study_window": "13:00-15:00",
+    "workload_risk": "High"
+  }
+]

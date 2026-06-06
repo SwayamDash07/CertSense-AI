@@ -1,0 +1,74 @@
+[
+  {
+    "learner_id": "L-1001",
+    "role": "Cloud Engineer",
+    "certification": "AZ-204",
+    "practice_score_avg": 67,
+    "hours_studied": 18,
+    "exam_outcome": "Fail",
+    "weak_areas": ["Azure Functions", "Cosmos DB", "API Management"],
+    "strong_areas": ["Blob Storage", "App Service"],
+    "preferred_learning_slot": "Morning",
+    "team": "TEAM-A"
+  },
+  {
+    "learner_id": "L-1002",
+    "role": "DevOps Engineer",
+    "certification": "AZ-400",
+    "practice_score_avg": 82,
+    "hours_studied": 24,
+    "exam_outcome": "Pass",
+    "weak_areas": ["Release Strategies"],
+    "strong_areas": ["CI/CD", "GitHub Actions", "Monitoring"],
+    "preferred_learning_slot": "Afternoon",
+    "team": "TEAM-A"
+  },
+  {
+    "learner_id": "L-1003",
+    "role": "Data Engineer",
+    "certification": "DP-203",
+    "practice_score_avg": 74,
+    "hours_studied": 20,
+    "exam_outcome": "Pass",
+    "weak_areas": ["Synapse Pipelines"],
+    "strong_areas": ["Azure Data Factory", "Data Lake"],
+    "preferred_learning_slot": "Morning",
+    "team": "TEAM-B"
+  },
+  {
+    "learner_id": "L-1004",
+    "role": "Cloud Engineer",
+    "certification": "AZ-204",
+    "practice_score_avg": 55,
+    "hours_studied": 10,
+    "exam_outcome": "Fail",
+    "weak_areas": ["Azure Functions", "Service Bus", "Key Vault", "API Management"],
+    "strong_areas": ["App Service"],
+    "preferred_learning_slot": "Evening",
+    "team": "TEAM-B"
+  },
+  {
+    "learner_id": "L-1005",
+    "role": "DevOps Engineer",
+    "certification": "AZ-400",
+    "practice_score_avg": 79,
+    "hours_studied": 22,
+    "exam_outcome": "Pass",
+    "weak_areas": ["Security Compliance"],
+    "strong_areas": ["CI/CD", "Monitoring", "Test Planning"],
+    "preferred_learning_slot": "Morning",
+    "team": "TEAM-C"
+  },
+  {
+    "learner_id": "L-1006",
+    "role": "Data Engineer",
+    "certification": "DP-203",
+    "practice_score_avg": 61,
+    "hours_studied": 14,
+    "exam_outcome": "Fail",
+    "weak_areas": ["Stream Analytics", "Synapse Pipelines", "Delta Lake"],
+    "strong_areas": ["Azure Data Factory"],
+    "preferred_learning_slot": "Afternoon",
+    "team": "TEAM-C"
+  }
+]
