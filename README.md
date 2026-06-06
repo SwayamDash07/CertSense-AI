@@ -204,12 +204,15 @@ pip install -r requirements.txt
 
 Create `backend/.env`:
 ```env
-FOUNDRY_PROJECT_ENDPOINT=your-foundry-project-endpoint
-FOUNDRY_API_KEY=your-foundry-api-key
-FOUNDRY_KNOWLEDGE_BASE=CertSense-kb
-GROQ_API_KEY=your-groq-api-key
 MODEL_PROVIDER=groq
 MODEL_NAME=llama-3.3-70b-versatile
+GROQ_API_KEY=XXXXXXXXXX
+
+FOUNDRY_API_KEY=XXXXXXXXXXX
+FOUNDRY_PROJECT_ENDPOINT=https://certsenseai-resource.services.ai.azure.com/api/projects/certsenseai
+AZURE_OPENAI_ENDPOINT=https://certsenseai-resource.openai.azure.com/openai/v1
+FOUNDRY_KNOWLEDGE_BASE=certSense-kb
+FOUNDRY_MODEL_DEPLOYMENT=Phi-4
 ```
 
 ```bash
@@ -252,6 +255,7 @@ All data in `/data/` is synthetic and generated for demonstration purposes only.
 
 - **Groq (Llama 3.3 70B Versatile)** — Primary LLM inference for agent reasoning
 - **Microsoft Azure AI Foundry** — Agent orchestration, Foundry IQ knowledge grounding, session logging
+- **Phi-4** — LLM via Azure AI Foundry (configurable via MODEL_PROVIDER)
 - **FastAPI** — Backend REST + WebSocket API
 - **React + Vite** — Frontend
 - **Azure AI Search** — Session persistence via Foundry IQ client
