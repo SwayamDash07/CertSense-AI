@@ -1,4 +1,4 @@
-# CertSense AI 🎯
+# CertSense AI
 
 > **An AI that doesn't just evaluate you — it listens to what you said, finds the gap, and asks you about *that*.**
 
@@ -18,19 +18,22 @@ Real technical interviews do. Your interviewer hears you say *"Azure Functions a
 
 ## What Makes It Different
 
-### 🎙️ Adaptive Voice Interview
+### Adaptive Interview
 The interview mode doesn't cycle through a fixed question list. It reads your answer, extracts the specific claim or vague statement you made, and follows up on *that* — just like a real interviewer would.
 
 You say: *"Azure Functions can scale automatically based on load."*
-CertSense hears: *vague on the mechanism* → asks: *"You mentioned auto-scaling — can you explain what triggers that scaling and how consumption vs. premium plan affects it?"*
+CertSense hears: *vague on the mechanism* — asks: *"You mentioned auto-scaling — can you explain what triggers that scaling and how consumption vs. premium plan affects it?"*
 
 That's not a chatbot. That's a conversation partner.
 
-### 📊 Dual-Mode System
-- **Evaluate Mode** — paste or speak a concept explanation, get a full readiness report in seconds
-- **Interview Mode** — multi-round adaptive conversation that drills into your actual knowledge gaps
+Every interview session opens with a cert-anchored question randomly selected from a bank of 4 per certification track, so the conversation never drifts off-topic and varies each session.
 
-### 🏢 Manager Dashboard
+### Three Distinct Learning Modes
+- **Analyze** — explain a concept in your own words, agents evaluate technical depth, generate a 7-day study plan targeting your specific gaps, produce grounded exam questions
+- **Practice Paper** — timed mock exam (5, 10, or 15 questions), AI-generated fresh every session, difficulty levels (Easy / Medium / Hard / Mixed), scored with correct answers and explanations
+- **Interview** — multi-round adaptive conversation, each follow-up question grounded in what you specifically said in the previous answer
+
+### Manager Dashboard
 Team-level certification readiness across all learners, with workload risk signals — so managers know *why* someone is behind, not just *that* they are.
 
 ---
@@ -48,33 +51,36 @@ Team-level certification readiness across all learners, with workload risk signa
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Frontend (React + Vite)                  │
-│   Evaluate │ Interview │ Manager Dashboard │ Progress        │
-│             WebSocket live agent stream                      │
-└──────────────────────┬──────────────────────────────────────┘
-                       │ REST + WebSocket
-┌──────────────────────▼──────────────────────────────────────┐
-│                  FastAPI Backend (Python)                     │
-│                                                              │
-│  ┌───────────────────────────────────────────────────────┐  │
-│  │                  Orchestrator Agent                    │  │
-│  │    Routes · Aggregates · Streams · Logs to Foundry    │  │
-│  └──┬─────────────┬─────────────┬──────────────┬────────┘  │
-│     │             │             │              │             │
-│  ┌──▼──┐     ┌───▼───┐    ┌───▼───┐     ┌───▼──────┐     │
-│  │Coach│     │Study  │    │Assess │     │Insights  │     │
-│  │Agent│     │Plan   │    │Agent  │     │Agent     │     │
-│  └──┬──┘     └───┬───┘    └───┬───┘     └───┬──────┘     │
-│     │             │             │              │             │
-│  ┌──▼─────────────▼─────────────▼──────────────▼────────┐  │
-│  │                  Microsoft Foundry IQ                  │  │
-│  │      Knowledge base · Grounded retrieval · Citations   │  │
-│  └────────────────────────────────────────────────────────┘  │
-│                                                              │
-│  Interview Mode (separate pipeline):                         │
-│  Answer Analyzer ──► Interviewer Agent (adaptive loop)      │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                      Frontend (React + Vite)                     │
+│   Analyze │ Practice Paper │ Interview │ Manager │ Progress      │
+│                  WebSocket live agent stream                      │
+└───────────────────────┬─────────────────────────────────────────┘
+                        │ REST + WebSocket
+┌───────────────────────▼─────────────────────────────────────────┐
+│                   FastAPI Backend (Python)                        │
+│                                                                   │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                     Orchestrator Agent                       │ │
+│  │       Routes · Aggregates · Streams · Logs to Foundry       │ │
+│  └──┬──────────────┬──────────────┬───────────────┬───────────┘ │
+│     │              │              │               │              │
+│  ┌──▼──┐      ┌───▼───┐     ┌───▼───┐      ┌───▼──────┐      │
+│  │Coach│      │Study  │     │Assess │      │Insights  │      │
+│  │Agent│      │Plan   │     │Agent  │      │Agent     │      │
+│  └──┬──┘      └───┬───┘     └───┬───┘      └───┬──────┘      │
+│     │              │              │               │              │
+│  ┌──▼──────────────▼──────────────▼───────────────▼──────────┐  │
+│  │                   Microsoft Foundry IQ                      │  │
+│  │       Knowledge base · Grounded retrieval · Citations       │  │
+│  └─────────────────────────────────────────────────────────────┘  │
+│                                                                   │
+│  Interview pipeline:                                              │
+│  Answer Analyzer ──► Interviewer Agent (adaptive loop)           │
+│                                                                   │
+│  Practice Paper pipeline:                                         │
+│  Assessment Agent ──► CERT_DOMAINS ──► LLM ──► Scorer           │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -85,11 +91,11 @@ Team-level certification readiness across all learners, with workload risk signa
 |---|---|
 | **Orchestrator** | Master coordinator. Routes tasks, aggregates results, streams live reasoning events over WebSocket |
 | **Readiness Coach** | Primary reasoning agent. Heuristic + LLM double-layer scoring against cert skill areas. Grounded via Foundry IQ |
-| **Study Plan** | Generates a personalized 7-day roadmap based on the Coach's identified gaps. Retrieves targeted Microsoft Learn resources |
-| **Assessment** | Produces scenario-based exam questions grounded in Foundry IQ knowledge sources, with citations |
+| **Study Plan** | Generates a personalized 7-day roadmap based on the Coach's identified gaps |
+| **Assessment** | Produces scenario-based exam questions grounded in Foundry IQ knowledge sources, with citations. Also powers Practice Paper question generation with per-cert domain constraints |
 | **Insights** | Analyzes session history to surface readiness trends and milestone progress |
 | **Answer Analyzer** | Interview mode only. Extracts specific claims, vague areas, and follow-up threads from each answer |
-| **Interviewer** | Runs the adaptive conversation. Uses Answer Analyzer output to ask the next question based on what you *actually said* |
+| **Interviewer** | Runs the adaptive conversation. Opens with a cert-anchored question (randomly selected from 4 per track), then uses Answer Analyzer output to ask the next question based on what you *actually said* |
 
 ---
 
@@ -103,18 +109,10 @@ Every LLM call for the Coach and Assessment agents includes Foundry IQ retrieved
 - `team_learning_report.md` — team readiness benchmarks and study correlations
 
 ### Fabric IQ — Semantic Model (Simulated)
-`data/fabric_iq_semantic_model.json` simulates the Fabric IQ semantic layer:
-certification entities, required skills, pass thresholds, readiness taxonomy,
-and study pattern rules. Drives the Study Plan Agent's scheduling logic and
-the Manager Dashboard's risk classification. Structured to mirror how a real
-Fabric IQ ontology would be consumed by agents.
+`data/fabric_iq_semantic_model.json` simulates the Fabric IQ semantic layer: certification entities, required skills, pass thresholds, readiness taxonomy, and study pattern rules. Drives the Study Plan Agent's scheduling logic and the Manager Dashboard's risk classification. Structured to mirror how a real Fabric IQ ontology would be consumed by agents.
 
 ### Work IQ — Work Activity Signals (Simulated)
-`data/work_activity_signals.json` simulates Work IQ organisational signals:
-meeting hours, focus hours, preferred learning slots, and workload risk
-classification per employee. Surfaced in the Manager Dashboard to explain
-*why* learners are at risk, not just *that* they are. Designed to reflect
-the kind of signals a live Work IQ integration would provide.
+`data/work_activity_signals.json` simulates Work IQ organisational signals: meeting hours, focus hours, preferred learning slots, and workload risk classification per employee. Surfaced in the Manager Dashboard to explain *why* learners are at risk, not just *that* they are. Designed to reflect the kind of signals a live Work IQ integration would provide.
 
 ---
 
@@ -126,9 +124,38 @@ the kind of signals a live Work IQ integration would provide.
 
 **Critic / Verifier** — In interview mode, the Answer Analyzer critiques each answer and feeds structured intelligence back to the Interviewer, which adjusts its next question accordingly. Self-correcting loop across multiple rounds.
 
+**Cert-Anchored Opening** — Interview sessions always start with a hardcoded domain-specific question per cert track (randomly selected from 4), ensuring the conversation never drifts off-topic regardless of how the user answers.
+
+**Domain-Constrained Generation** — Practice Paper questions are generated against explicit per-cert domain lists (`CERT_DOMAINS`), preventing off-topic questions and ensuring coverage across the full exam syllabus.
+
 **Grounded Retrieval** — Every LLM prompt includes Foundry IQ context. Hallucination risk on exam-critical content is actively reduced.
 
-**Real-Time Streaming** — The Orchestrator yields `AgentEvent` objects as each agent starts, reasons, and completes. These stream to the frontend over WebSocket, giving live visibility into agent collaboration.
+**Real-Time Streaming** — The Orchestrator yields `AgentEvent` objects as each agent starts, reasons, and completes. These stream to the frontend over WebSocket across all three modes (Analyze, Interview, Practice Paper), giving live visibility into agent collaboration.
+
+---
+
+## LLM Provider
+
+CertSense AI uses a provider-agnostic LLM abstraction layer (`services/llm.py`). The active provider is configured via environment variables and can be swapped without changing any agent code.
+
+**Tested with:**
+- Groq — Llama 3.3 70B Versatile (primary, fast inference)
+- Microsoft Azure AI Foundry — Phi-4
+
+**Compatible with any OpenAI-compatible API**, including:
+- Google Gemini (via OpenAI-compatible endpoint)
+- Mistral
+- Together AI
+- Ollama (local models)
+- Any provider exposing an OpenAI-compatible `/v1/chat/completions` endpoint
+
+To switch providers, update your `.env`:
+```env
+MODEL_PROVIDER=groq                     # or: foundry, openai, gemini
+MODEL_NAME=llama-3.3-70b-versatile      # or: phi-4, gemini-1.5-pro, etc.
+LLM_API_KEY=your-api-key
+LLM_BASE_URL=https://api.groq.com/openai/v1   # override for custom endpoints
+```
 
 ---
 
@@ -140,26 +167,26 @@ certsense-ai/
 │   ├── main.py                        # FastAPI app, CORS, WebSocket
 │   ├── agents/
 │   │   ├── answer_analyzer.py         # Interview answer intelligence extraction
-│   │   ├── assessment.py              # Exam-style question generation
+│   │   ├── assessment.py              # Exam-style question generation + Practice Paper
 │   │   ├── communication_coach.py     # Readiness Coach — primary reasoning agent
 │   │   ├── insights.py                # Progress trend analysis
-│   │   ├── interviewer.py             # Adaptive multi-round interviewer
+│   │   ├── interviewer.py             # Adaptive multi-round interviewer (cert-anchored)
 │   │   └── study_plan.py              # 7-day personalized study roadmap
 │   ├── models/
 │   │   └── schemas.py                 # Pydantic models
 │   ├── routers/
-│   │   ├── analysis.py                # /api/analysis/* endpoints
+│   │   ├── analysis.py                # /api/analysis/* endpoints (analyze, interview, practice)
 │   │   ├── sessions.py                # /api/sessions/* endpoints
 │   │   └── progress.py                # /api/progress/* endpoints
 │   └── services/
 │       ├── foundry_client.py          # Agent registration, task routing, session logging
 │       ├── foundry_iq.py              # Foundry IQ knowledge retrieval client
-│       ├── llm.py                     # LLM abstraction (Phi-4 via Foundry)
+│       ├── llm.py                     # Provider-agnostic LLM abstraction
 │       ├── orchestrator.py            # OrchestratorAgent + OrchestratorService
 │       └── speech_processor.py        # Whisper audio transcription
 ├── frontend/
 │   └── src/
-│       └── App.jsx                    # React frontend
+│       └── App.jsx                    # React frontend (Analyze, Practice Paper, Interview, Manager, Progress)
 └── data/
     ├── learner_performance.json        # Synthetic learner dataset
     ├── work_activity_signals.json      # Synthetic Work IQ signals
@@ -176,8 +203,10 @@ certsense-ai/
 |---|---|---|
 | POST | `/api/analysis/transcript` | Analyze text explanation through full agent pipeline |
 | POST | `/api/analysis/audio` | Upload audio — Whisper transcription then agent pipeline |
-| POST | `/api/analysis/interview/start` | Begin adaptive interview session |
-| POST | `/api/analysis/interview/next` | Submit answer, receive next adaptive question |
+| POST | `/api/analysis/practice/generate` | Generate fresh practice paper questions (per-cert domain constrained) |
+| POST | `/api/analysis/practice/submit` | Score answers, return review with explanations and gap links |
+| POST | `/api/analysis/interview/start` | Begin adaptive interview — cert-anchored opening question |
+| POST | `/api/analysis/interview/next` | Submit answer, receive next adaptive question + strategy used |
 | POST | `/api/analysis/interview/assess` | Run full pipeline over completed interview history |
 | GET | `/api/analysis/goals` | List available certification tracks |
 | GET | `/api/sessions/{user_id}` | Retrieve past sessions |
@@ -192,6 +221,7 @@ certsense-ai/
 - Python 3.10+
 - Node.js 18+
 - Azure subscription with Microsoft Foundry project configured
+- Groq API key (or any compatible LLM provider)
 
 ### Backend
 ```bash
@@ -243,11 +273,11 @@ All data in `/data/` is synthetic and generated for demonstration purposes only.
 
 | Criterion | Weight | How CertSense AI addresses it |
 |---|---|---|
-| Accuracy & Relevance | 25% | Foundry IQ grounding on every agent LLM call. Heuristic + LLM double-layer for Readiness Coach. Graceful fallback prevents hallucination on API failure. |
-| Reasoning & Multi-step Thinking | 25% | 7 specialized agents in sequential dependency chain. Adaptive interview with Critic pattern (Answer Analyzer → Interviewer loop). WebSocket stream shows every reasoning step live. |
-| Creativity & Originality | 15% | Adaptive interview that follows up on *your specific words*, not a fixed question bank. Real-time agent thought streaming. Voice explanation as primary input modality. |
-| User Experience & Presentation | 15% | Live agent stream panel. Manager Dashboard with team filter. Score bars, risk badges, study plan timeline, exam questions — all in one flow. |
-| Reliability & Safety | 20% | Graceful fallback at every external call. Synthetic data only. No PII. Pydantic input/output validation. Non-fatal error paths throughout. |
+| Accuracy & Relevance | 25% | Foundry IQ grounding on every agent LLM call. Heuristic + LLM double-layer for Readiness Coach. Domain-constrained Practice Paper generation. Graceful fallback prevents hallucination on API failure. |
+| Reasoning & Multi-step Thinking | 25% | 7 specialized agents in sequential dependency chain. Adaptive interview with Critic pattern (Answer Analyzer → Interviewer loop). Cert-anchored opening questions. WebSocket stream shows every reasoning step live across all three modes. |
+| Creativity & Originality | 15% | Adaptive interview that follows up on *your specific words*. Three genuinely distinct learning modes forming a complete study loop. Fresh questions every Practice Paper session. Voice explanation as primary input modality. |
+| User Experience & Presentation | 15% | Live agent stream panel across Analyze, Interview, and Practice Paper. Manager Dashboard with team filter. Score bars, risk badges, study plan timeline, timed mock exam with progress dots. |
+| Reliability & Safety | 20% | Graceful fallback at every external call. Synthetic data only. No PII. Pydantic input/output validation. Non-fatal error paths throughout. Provider-agnostic LLM layer for resilience. |
 
 ---
 
@@ -255,7 +285,7 @@ All data in `/data/` is synthetic and generated for demonstration purposes only.
 
 - **Groq (Llama 3.3 70B Versatile)** — Primary LLM inference for agent reasoning
 - **Microsoft Azure AI Foundry** — Agent orchestration, Foundry IQ knowledge grounding, session logging
-- **Phi-4** — LLM via Azure AI Foundry (configurable via MODEL_PROVIDER)
+- - **Phi-4** — Secondary LLM via Azure AI Foundry (swappable via `MODEL_PROVIDER`)
 - **FastAPI** — Backend REST + WebSocket API
 - **React + Vite** — Frontend
 - **Azure AI Search** — Session persistence via Foundry IQ client

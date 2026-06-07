@@ -9,10 +9,10 @@ const CERTS = [
 ];
 
 const AGENTS = [
-  { key: "readiness_coach", label: "Readiness Coach", desc: "Evaluates concept coverage & depth" },
-  { key: "study_plan", label: "Study Planner", desc: "Generates 7-day personalized plan" },
-  { key: "assessment", label: "Assessment Engine", desc: "Exam-style grounded questions" },
-  { key: "insights", label: "Progress Insights", desc: "Long-term readiness analytics" },
+  { key: "readiness_coach", label: "Readiness Coach", icon: "--", desc: "Evaluates concept coverage & depth" },
+  { key: "study_plan", label: "Study Planner", icon: "--", desc: "Generates 7-day personalized plan" },
+  { key: "assessment", label: "Assessment Engine", icon: "--", desc: "Exam-style grounded questions" },
+  { key: "insights", label: "Progress Insights", icon: "--", desc: "Long-term readiness analytics" },
 ];
 
 const css = `
@@ -152,6 +152,60 @@ const css = `
   .team-filter{display:flex;gap:.375rem;flex-wrap:wrap;margin-bottom:1rem}
   .team-filter-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:.65rem;padding:4px 10px;border-radius:5px;cursor:pointer;transition:all .15s}
   .team-filter-btn.active{background:var(--bg4);border-color:var(--blue);color:var(--blue2)}
+
+  .paper-config{padding:2.5rem 2rem;display:flex;flex-direction:column;gap:1.5rem;max-width:560px}
+  .config-label{font-size:.65rem;font-family:var(--mono);color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.625rem}
+  .config-row{display:flex;gap:.5rem;flex-wrap:wrap}
+  .config-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:.75rem;padding:7px 18px;border-radius:6px;cursor:pointer;transition:all .2s;font-weight:500}
+  .config-btn:hover{border-color:var(--border2);color:var(--text)}
+  .config-btn.active{background:var(--bg4);border-color:var(--blue);color:var(--blue2)}
+  .paper-wrap{padding:1.5rem 2rem;flex:1;display:flex;flex-direction:column;gap:1rem}
+  .paper-header{display:flex;justify-content:space-between;align-items:center;padding:.875rem 1.25rem;background:var(--bg2);border:1px solid var(--border);border-radius:10px}
+  .paper-meta{font-size:.7rem;font-family:var(--mono);color:var(--text3)}
+  .paper-timer{font-size:1.1rem;font-weight:700;font-family:var(--mono);color:var(--blue2)}
+  .paper-timer.warning{color:var(--amber)}
+  .paper-timer.danger{color:var(--red);animation:pulse 1s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  .pq-block{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;transition:border .2s}
+  .pq-block.answered{border-color:rgba(59,130,246,.3)}
+  .pq-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem}
+  .pq-num{font-size:.65rem;font-family:var(--mono);color:var(--text3)}
+  .pq-difficulty{font-size:.6rem;font-family:var(--mono);padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.06em}
+  .pq-diff-recall{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+  .pq-diff-comprehension{background:rgba(59,130,246,.1);color:var(--blue2);border:1px solid rgba(59,130,246,.2)}
+  .pq-diff-application{background:rgba(139,92,246,.1);color:var(--purple);border:1px solid rgba(139,92,246,.2)}
+  .pq-diff-analysis{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+  .pq-diff-scenario{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+  .pq-skill{font-size:.62rem;font-family:var(--mono);color:var(--text3);margin-bottom:.5rem}
+  .pq-text{font-size:.85rem;font-weight:500;color:var(--text);line-height:1.6;margin-bottom:1rem}
+  .pq-options{display:flex;flex-direction:column;gap:.5rem}
+  .pq-option{display:flex;gap:.875rem;align-items:flex-start;padding:.625rem .875rem;border-radius:7px;border:1px solid var(--border);cursor:pointer;transition:all .2s;background:var(--bg3)}
+  .pq-option:hover{border-color:var(--border2);background:var(--bg4)}
+  .pq-option.selected{border-color:var(--blue);background:rgba(59,130,246,.08)}
+  .pq-option.correct{border-color:var(--green);background:rgba(16,185,129,.08)}
+  .pq-option.wrong{border-color:var(--red);background:rgba(239,68,68,.08)}
+  .pq-option-key{font-family:var(--mono);font-size:.7rem;font-weight:600;color:var(--text3);min-width:18px;margin-top:1px}
+  .pq-option-text{font-size:.78rem;color:var(--text2);line-height:1.5}
+  .pq-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.78rem;border-radius:8px;padding:.875rem;resize:vertical;min-height:90px;outline:none;transition:border .2s;line-height:1.6}
+  .pq-textarea:focus{border-color:var(--blue)}
+  .pq-textarea::placeholder{color:var(--text3)}
+  .paper-result{padding:1.5rem 2rem;display:flex;flex-direction:column;gap:1rem}
+  .result-banner{padding:1.5rem;border-radius:12px;border:1px solid var(--border);background:linear-gradient(135deg,rgba(29,78,216,.15),rgba(139,92,246,.08));display:flex;gap:1.5rem;align-items:center}
+  .result-score-big{font-size:3rem;font-weight:700;font-family:var(--mono);color:var(--blue2);line-height:1}
+  .result-label{font-size:.75rem;font-weight:600;color:var(--text);margin-bottom:.25rem}
+  .result-verdict{font-size:.78rem;color:var(--text2);line-height:1.6}
+  .pr-q-block{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.125rem;margin-bottom:.75rem}
+  .pr-q-text{font-size:.82rem;font-weight:500;color:var(--text);margin-bottom:.875rem;line-height:1.5}
+  .pr-answer-row{display:flex;gap:.625rem;align-items:flex-start;padding:.5rem .75rem;border-radius:6px;font-size:.75rem;margin-bottom:.375rem}
+  .pr-answer-row.correct-row{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15)}
+  .pr-answer-row.wrong-row{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15)}
+  .pr-answer-row.ideal-row{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15)}
+  .pr-explanation{font-size:.75rem;color:var(--text2);line-height:1.6;margin-top:.625rem;padding:.625rem .875rem;background:var(--bg3);border-radius:6px;border-left:2px solid var(--blue)}
+  .gap-link{display:inline-flex;align-items:center;gap:.375rem;font-size:.7rem;font-family:var(--mono);color:var(--blue2);padding:4px 10px;border-radius:5px;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.06);cursor:pointer;transition:all .2s;margin:.25rem}
+  .gap-link:hover{background:rgba(59,130,246,.12);border-color:var(--blue)}
+  .paper-progress{display:flex;gap:.375rem;flex-wrap:wrap;margin-bottom:.5rem}
+  .pp-dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);transition:all .3s;cursor:default}
+  .pp-dot.answered{background:var(--blue3);border-color:var(--blue)}
 `;
 
 function ScoreCard({ label, value, max = 10, accent }) {
@@ -228,41 +282,8 @@ function StreamPanel({ events }) {
 
 function StudyPlanView({ data }) {
   if (!data) return <div className="prose">No study plan generated.</div>;
-
-  // Parse if string
-  let parsed = data;
-  if (typeof data === "string") {
-    try { parsed = JSON.parse(data); } catch { parsed = null; }
-  }
-
-  // Structured JSON path
-  if (parsed && parsed.daily_plan && Array.isArray(parsed.daily_plan)) {
-    return (
-      <div>
-        {parsed.theme && <div className="prose" style={{ marginBottom: "1rem", color: "var(--text2)" }}>{parsed.theme}</div>}
-        {parsed.daily_plan.map((day, i) => (
-          <div className="plan-day" key={i}>
-            <span className="plan-day-num">DAY {day.day || i + 1}</span>
-            <div className="plan-day-content">
-              {day.theme && <div style={{ fontWeight: 600, color: "var(--text)", marginBottom: ".375rem" }}>{day.theme}</div>}
-              {day.exercises && Array.isArray(day.exercises) && day.exercises.map((ex, j) => (
-                <div key={j} style={{ marginBottom: ".5rem", paddingLeft: ".75rem", borderLeft: "2px solid var(--border2)" }}>
-                  <div style={{ fontWeight: 500, color: "var(--text2)", fontSize: ".75rem" }}>{ex.name}</div>
-                  {ex.duration && <div style={{ fontSize: ".65rem", color: "var(--text3)", fontFamily: "var(--mono)" }}>{ex.duration}</div>}
-                  {ex.description && <div style={{ fontSize: ".72rem", color: "var(--text2)", marginTop: ".25rem", lineHeight: 1.6 }}>{ex.description}</div>}
-                  {ex.goal && <div style={{ fontSize: ".65rem", color: "var(--blue2)", marginTop: ".2rem" }}>Goal: {ex.goal}</div>}
-                </div>
-              ))}
-              {day.checkpoint && <div style={{ fontSize: ".68rem", color: "var(--amber)", fontFamily: "var(--mono)", marginTop: ".5rem" }}>Checkpoint: {day.checkpoint}</div>}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  // Fallback: plain text line-by-line
   const raw = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+  const days = raw.match(/day\s*\d+[^\n]*/gi) || [];
   const lines = raw.split("\n").filter(l => l.trim());
   return (
     <div>
@@ -282,144 +303,27 @@ function StudyPlanView({ data }) {
 
 function AssessmentView({ data }) {
   if (!data) return <div className="prose">No assessment generated.</div>;
-
-  let questions = null;
-  if (data.questions && Array.isArray(data.questions)) {
-    questions = data.questions;
-  } else if (Array.isArray(data)) {
-    questions = data;
-  } else if (typeof data === "string") {
-    try {
-      const p = JSON.parse(data);
-      if (Array.isArray(p)) questions = p;
-      else if (p.questions) questions = p.questions;
-    } catch {}
-  }
-
-  if (questions && questions.length > 0) {
-    return (
-      <div>
-        {questions.slice(0, 8).map((q, i) => {
-          const qObj = typeof q === "string" ? (() => { try { return JSON.parse(q); } catch { return null; } })() : q;
-          if (qObj && qObj.question) {
-            return (
-              <div className="q-block" key={i}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".5rem" }}>
-                  <div className="q-number">Q{i + 1}</div>
-                  {qObj.difficulty && <span style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em" }}>{qObj.difficulty}</span>}
-                  {qObj.skill_area && <span style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--blue2)" }}>{qObj.skill_area}</span>}
-                </div>
-                <div className="q-text">{qObj.question}</div>
-                {qObj.ideal_answer_points && Array.isArray(qObj.ideal_answer_points) && (
-                  <div style={{ marginTop: ".625rem" }}>
-                    <div style={{ fontSize: ".62rem", fontFamily: "var(--mono)", color: "var(--text3)", marginBottom: ".375rem", textTransform: "uppercase", letterSpacing: ".06em" }}>Key Points</div>
-                    {qObj.ideal_answer_points.map((pt, j) => (
-                      <div key={j} style={{ fontSize: ".72rem", color: "var(--text2)", padding: ".2rem 0 .2rem .75rem", borderLeft: "2px solid var(--border2)", marginBottom: ".25rem" }}>{pt}</div>
-                    ))}
-                  </div>
-                )}
-                {qObj.options && Array.isArray(qObj.options) && qObj.options.map((opt, j) => (
-                  <div className="q-option" key={j}>
-                    <span>{String.fromCharCode(65 + j)}</span>
-                    <span>{opt}</span>
-                  </div>
-                ))}
-                <div className="citation-row"><span className="citation-dot" /><span>Grounded via Microsoft Foundry IQ</span></div>
-              </div>
-            );
-          }
-          return (
-            <div className="q-block" key={i}>
-              <div className="q-number">Q{i + 1}</div>
-              <div className="q-text">{String(q).slice(0, 400)}</div>
-              <div className="citation-row"><span className="citation-dot" /><span>Grounded via Microsoft Foundry IQ</span></div>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  const raw = typeof data === "string" ? data : JSON.stringify(data, null, 2);
-  return <pre className="prose" style={{ whiteSpace: "pre-wrap", fontSize: ".75rem" }}>{raw.slice(0, 1500)}</pre>;
+  const raw = typeof data === "string" ? data : (data.questions ? JSON.stringify(data.questions) : JSON.stringify(data));
+  const qs = raw.split(/Q\d+[:\.]|Question\s*\d+[:.]/i).filter(Boolean).slice(0, 8);
+  if (!qs.length) return <pre className="prose" style={{ whiteSpace: "pre-wrap", fontSize: ".75rem" }}>{raw.slice(0, 1200)}</pre>;
+  return (
+    <div>
+      {qs.map((q, i) => (
+        <div className="q-block" key={i}>
+          <div className="q-number">Q{i + 1}</div>
+          <div className="q-text">{q.split("\n")[0].slice(0, 200)}</div>
+          {q.split("\n").slice(1).filter(l => /^[A-D][.)]\s/.test(l.trim())).map((opt, j) => (
+            <div className="q-option" key={j}><span>{opt.trim()[0]}</span><span>{opt.trim().slice(2).trim()}</span></div>
+          ))}
+          <div className="citation-row"><span className="citation-dot" /><span>Grounded via Microsoft Foundry IQ</span></div>
+        </div>
+      ))}
+    </div>
+  );
 }
-
 
 function InsightsView({ data }) {
   if (!data) return <div className="prose">No insights generated.</div>;
-
-  let parsed = data;
-  if (typeof data === "string") {
-    try { parsed = JSON.parse(data); } catch { parsed = null; }
-  }
-
-  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-    const trend = parsed.trend || parsed.trend_direction;
-    const report = parsed.report;
-    const milestones = parsed.milestones || [];
-    const baseline = parsed.baseline_score;
-    const sessions = parsed.session_count;
-    const chartData = parsed.chart_data || [];
-    const trendPct = parsed.trend_percentage;
-
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: ".875rem" }}>
-        {report && (
-          <div style={{ fontSize: ".82rem", color: "var(--text2)", lineHeight: 1.7, padding: "1rem", background: "var(--bg3)", borderRadius: "8px", border: "1px solid var(--border)" }}>
-            {report}
-          </div>
-        )}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: ".75rem" }}>
-          {baseline !== undefined && (
-            <div style={{ background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: "8px", padding: ".875rem" }}>
-              <div style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".375rem" }}>Baseline Score</div>
-              <div style={{ fontSize: "1.5rem", fontWeight: 700, fontFamily: "var(--mono)", color: "var(--blue2)" }}>{baseline}/10</div>
-            </div>
-          )}
-          {sessions !== undefined && (
-            <div style={{ background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: "8px", padding: ".875rem" }}>
-              <div style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".375rem" }}>Sessions</div>
-              <div style={{ fontSize: "1.5rem", fontWeight: 700, fontFamily: "var(--mono)", color: "var(--cyan)" }}>{sessions}</div>
-            </div>
-          )}
-          {trend && (
-            <div style={{ background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: "8px", padding: ".875rem" }}>
-              <div style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".375rem" }}>Trend</div>
-              <div style={{ fontSize: "1rem", fontWeight: 700, fontFamily: "var(--mono)", color: trend === "improving" ? "var(--green)" : trend === "declining" ? "var(--red)" : "var(--amber)", textTransform: "capitalize" }}>
-                {trend} {trendPct ? `+${trendPct}%` : ""}
-              </div>
-            </div>
-          )}
-        </div>
-        {milestones.length > 0 && (
-          <div>
-            <div style={{ fontSize: ".62rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".5rem" }}>Milestones</div>
-            <div className="tag-row">
-              {milestones.map((m, i) => <span key={i} className="tag green">{m}</span>)}
-            </div>
-          </div>
-        )}
-        {chartData.length > 0 && (
-          <div>
-            <div style={{ fontSize: ".62rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".5rem" }}>Score History</div>
-            <div style={{ display: "flex", gap: ".5rem", alignItems: "flex-end", height: "60px" }}>
-              {chartData.map((pt, i) => {
-                const h = Math.max(8, (pt.score / 10) * 60);
-                return (
-                  <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: ".25rem", flex: 1 }}>
-                    <div style={{ width: "100%", height: `${h}px`, background: "var(--blue3)", borderRadius: "3px 3px 0 0", border: "1px solid var(--border2)" }} />
-                    <div style={{ fontSize: ".55rem", fontFamily: "var(--mono)", color: "var(--text3)" }}>S{pt.session}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // Fallback plain text
   const raw = typeof data === "string" ? data : JSON.stringify(data, null, 2);
   const lines = raw.split("\n").filter(l => l.trim()).slice(0, 20);
   return (
@@ -509,7 +413,10 @@ function InterviewMode({ cert }) {
 
   async function startInterview() {
     setLoading(true);
-    setStreamEvents([{ agent: "interviewer", status: "thinking", message: "Generating first question..." }]);
+    setStreamEvents([
+      { agent: "interviewer", status: "thinking", message: `Loading ${cert} interview session...` },
+      { agent: "interviewer", status: "thinking", message: "Selecting opening question from cert-anchored bank..." },
+    ]);
     try {
       const r = await fetch(`${API}/api/analysis/interview/start`, {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -521,7 +428,7 @@ function InterviewMode({ cert }) {
       setRound(1);
       setHistory([]);
       setStage("questioning");
-      setStreamEvents([{ agent: "interviewer", status: "done", message: "Question ready" }]);
+      setStreamEvents([{ agent: "interviewer", status: "done", message: `${cert} opening question ready` }]);
     } catch {
       setStreamEvents([{ agent: "interviewer", status: "error", message: "Could not connect to backend" }]);
     }
@@ -538,17 +445,21 @@ function InterviewMode({ cert }) {
       return;
     }
     setLoading(true);
-    setStreamEvents(e => [...e, { agent: "interviewer", status: "thinking", message: `Generating round ${round + 1}...` }]);
+    setStreamEvents(e => [...e,
+      { agent: "answer_analyzer", status: "thinking", message: "Extracting claims and gaps from your answer..." },
+      { agent: "interviewer", status: "thinking", message: `Selecting follow-up strategy for round ${round + 1}...` },
+    ]);
     try {
       const r = await fetch(`${API}/api/analysis/interview/next`, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ goal: cert, round_number: round + 1, max_rounds: maxRounds, history: newHistory, memory })
       });
       const d = await r.json();
+      const strategy = d.strategy ? ` [${d.strategy}]` : "";
       setQuestion(d.question || d.next_question || "Continue explaining your approach.");
       setMemory(d.memory || memory);
       setRound(r => r + 1);
-      setStreamEvents(e => [...e, { agent: "interviewer", status: "done", message: `Round ${round + 1} ready` }]);
+      setStreamEvents(e => [...e, { agent: "interviewer", status: "done", message: `Round ${round + 1} ready${strategy}` }]);
     } catch {
       setStreamEvents(e => [...e, { agent: "interviewer", status: "error", message: "Request failed" }]);
     }
@@ -558,7 +469,12 @@ function InterviewMode({ cert }) {
   async function finalAssess(h) {
     setStage("assessing");
     setLoading(true);
-    setStreamEvents(e => [...e, { agent: "orchestrator", status: "thinking", message: "Running full agent pipeline..." }]);
+    setStreamEvents(e => [...e,
+      { agent: "orchestrator", status: "thinking", message: "Running full multi-agent assessment pipeline..." },
+      { agent: "readiness_coach", status: "thinking", message: "Evaluating interview transcript depth and accuracy..." },
+      { agent: "study_plan", status: "thinking", message: "Building personalized study roadmap from identified gaps..." },
+      { agent: "assessment", status: "thinking", message: "Generating grounded exam questions via Foundry IQ..." },
+    ]);
     try {
       const r = await fetch(`${API}/api/analysis/interview/assess`, {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -567,7 +483,7 @@ function InterviewMode({ cert }) {
       const d = await r.json();
       setResult(d.result);
       setStage("done");
-      setStreamEvents(e => [...e, { agent: "orchestrator", status: "done", message: "Analysis complete" }]);
+      setStreamEvents(e => [...e, { agent: "orchestrator", status: "done", message: "All agents completed — full report ready" }]);
     } catch {
       setStreamEvents(e => [...e, { agent: "orchestrator", status: "error", message: "Assessment failed" }]);
     }
@@ -592,7 +508,7 @@ function InterviewMode({ cert }) {
       <StreamPanel events={streamEvents} />
       {stage === "idle" && (
         <div className="empty-state" style={{ padding: "2rem 0" }}>
-                    <div className="empty-text">Start an AI-driven interview session. Our Interviewer Agent will ask {maxRounds} tailored questions about {cert}, then run a full readiness assessment.</div>
+          <div className="empty-text">Start an AI-driven interview session. Our Interviewer Agent will ask {maxRounds} tailored questions about {cert}, then run a full readiness assessment.</div>
           <button className="run-btn" style={{ marginTop: "1rem" }} onClick={startInterview} disabled={loading}>
             {loading ? <><span className="spinner" /> Starting...</> : "Start Interview"}
           </button>
@@ -634,6 +550,324 @@ function InterviewMode({ cert }) {
   );
 }
 
+
+// ── Utility: format seconds as MM:SS ─────────────────────────────────────────
+function fmtTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+}
+
+// ── Practice Paper ────────────────────────────────────────────────────────────
+function PracticePaper({ cert, onGotoStudyPlan }) {
+  const [stage, setStage] = useState("config");   // config | loading | paper | result
+  const [questionCount, setQuestionCount] = useState(10);
+  const [difficulty, setDifficulty] = useState("mixed");
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState({});      // { qIndex: "A"|"B"|text }
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [timeTaken, setTimeTaken] = useState(0);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+  const [streamEvents, setStreamEvents] = useState([]);
+  const timerRef = useRef(null);
+
+  const TIMES = { 5: 10 * 60, 10: 20 * 60, 15: 30 * 60 };
+  const DIFFICULTIES = [
+    { id: "easy",   label: "Easy",   sub: "Recall & comprehension" },
+    { id: "medium", label: "Medium", sub: "Application & analysis" },
+    { id: "hard",   label: "Hard",   sub: "Scenario & design" },
+    { id: "mixed",  label: "Mixed",  sub: "All difficulty levels" },
+  ];
+
+  function startTimer(seconds) {
+    setTimeLeft(seconds);
+    const start = Date.now();
+    timerRef.current = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - start) / 1000);
+      const left = seconds - elapsed;
+      setTimeLeft(Math.max(left, 0));
+      setTimeTaken(elapsed);
+      if (left <= 0) { clearInterval(timerRef.current); submitPaper(true); }
+    }, 1000);
+  }
+
+  useEffect(() => () => clearInterval(timerRef.current), []);
+
+  async function generatePaper() {
+    setStage("loading");
+    setError("");
+    setAnswers({});
+    setResult(null);
+    setStreamEvents([
+      { agent: "assessment", status: "started", message: `Generating ${questionCount} ${difficulty} questions for ${cert}...` },
+    ]);
+    try {
+      setStreamEvents(e => [...e, { agent: "assessment", status: "thinking", message: "Querying Foundry IQ knowledge base..." }]);
+      const r = await fetch(`${API}/api/analysis/practice/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goal: cert, question_count: questionCount, difficulty })
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const d = await r.json();
+      const qs = d.questions || [];
+      if (!qs.length) throw new Error("No questions returned");
+      setStreamEvents(e => [...e, { agent: "assessment", status: "completed", message: `${qs.length} questions generated — grounded in ${cert} exam domains` }]);
+      setQuestions(qs);
+      setStage("paper");
+      startTimer(TIMES[questionCount]);
+    } catch (e) {
+      setStreamEvents(ev => [...ev, { agent: "assessment", status: "error", message: e.message }]);
+      setError(e.message);
+      setStage("config");
+    }
+  }
+
+  async function submitPaper(timeUp = false) {
+    clearInterval(timerRef.current);
+    setStage("loading");
+    setStreamEvents([
+      { agent: "assessment", status: "started", message: "Scoring your answers..." },
+      { agent: "assessment", status: "thinking", message: "Evaluating each response against exam criteria..." },
+    ]);
+    try {
+      const r = await fetch(`${API}/api/analysis/practice/submit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ goal: cert, questions, answers, time_taken: timeTaken, time_up: timeUp })
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const d = await r.json();
+      setStreamEvents(e => [...e, { agent: "assessment", status: "completed", message: `Scored ${d.correct}/${d.total} — ${d.score_pct}%` }]);
+      setResult(d);
+      setStage("result");
+    } catch (e) {
+      setStreamEvents(ev => [...ev, { agent: "assessment", status: "error", message: e.message }]);
+      setError(e.message);
+      setStage("paper");
+    }
+  }
+
+  function reset() {
+    clearInterval(timerRef.current);
+    setStage("config");
+    setQuestions([]);
+    setAnswers({});
+    setResult(null);
+    setError("");
+  }
+
+  const timerColor = timeLeft > 300 ? "paper-timer" : timeLeft > 60 ? "paper-timer warning" : "paper-timer danger";
+  const answered = Object.keys(answers).length;
+
+  // ── Config screen ────────────────────────────────────────────────────────
+  if (stage === "config") return (
+    <div>
+      <div className="hero">
+        <div className="hero-eyebrow">Practice Paper · {cert}</div>
+        <div className="hero-title">Timed <em>mock exam</em></div>
+        <div className="hero-sub">AI-generated questions grounded in Foundry IQ knowledge base. New questions generated every time.</div>
+      </div>
+      <div className="paper-config">
+        {error && <div style={{ fontSize: ".75rem", color: "var(--red)", fontFamily: "var(--mono)", padding: ".625rem .875rem", background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.2)", borderRadius: "6px" }}>{error}</div>}
+
+        <div>
+          <div className="config-label">Number of Questions</div>
+          <div className="config-row">
+            {[5, 10, 15].map(n => (
+              <button key={n} className={`config-btn ${questionCount === n ? "active" : ""}`} onClick={() => setQuestionCount(n)}>
+                {n} questions · {n === 5 ? "10 min" : n === 10 ? "20 min" : "30 min"}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="config-label">Difficulty</div>
+          <div className="config-row">
+            {DIFFICULTIES.map(d => (
+              <button key={d.id} className={`config-btn ${difficulty === d.id ? "active" : ""}`} onClick={() => setDifficulty(d.id)}>
+                <div>{d.label}</div>
+                <div style={{ fontSize: ".6rem", color: difficulty === d.id ? "var(--blue2)" : "var(--text3)", marginTop: "2px" }}>{d.sub}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ padding: ".875rem 1rem", background: "var(--bg3)", borderRadius: "8px", border: "1px solid var(--border)", fontSize: ".75rem", color: "var(--text2)", lineHeight: 1.7 }}>
+          <div style={{ fontWeight: 600, color: "var(--text)", marginBottom: ".25rem" }}>{cert} · {questionCount} questions · {TIMES[questionCount] / 60} minutes</div>
+          Questions are generated fresh each session by the Assessment Agent using Foundry IQ context. Answers are scored with explanations and linked to your study plan gaps.
+        </div>
+
+        <button className="run-btn" onClick={generatePaper} style={{ width: "fit-content" }}>
+          Generate Paper
+        </button>
+      </div>
+    </div>
+  );
+
+  // ── Loading ───────────────────────────────────────────────────────────────
+  if (stage === "loading") return (
+    <div style={{ padding: "2rem" }}>
+      <StreamPanel events={streamEvents} />
+      <div className="empty-state" style={{ padding: "2rem 0" }}>
+        <span className="spinner" style={{ width: 24, height: 24, borderWidth: 3 }} />
+        <div style={{ fontSize: ".875rem", color: "var(--text2)", marginTop: "1rem" }}>
+          {result === null && questions.length === 0 ? "Assessment Agent generating questions via Foundry IQ..." : "Scoring your answers..."}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── Paper ─────────────────────────────────────────────────────────────────
+  if (stage === "paper") return (
+    <div className="paper-wrap">
+      <div className="paper-header">
+        <div>
+          <div style={{ fontWeight: 600, fontSize: ".82rem", color: "var(--text)" }}>{cert} Practice Paper</div>
+          <div className="paper-meta">{difficulty} · {questionCount} questions</div>
+        </div>
+        <div style={{ display: "flex", align: "center", gap: "1.5rem" }}>
+          <div style={{ textAlign: "center" }}>
+            <div className="paper-meta">Answered</div>
+            <div style={{ fontFamily: "var(--mono)", fontWeight: 700, color: "var(--blue2)", fontSize: ".95rem" }}>{answered}/{questionCount}</div>
+          </div>
+          <div style={{ textAlign: "right" }}>
+            <div className="paper-meta">Time Left</div>
+            <div className={timerColor}>{fmtTime(timeLeft)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="paper-progress">
+        {questions.map((_, i) => <div key={i} className={`pp-dot ${answers[i] !== undefined ? "answered" : ""}`} />)}
+      </div>
+
+      {questions.map((q, i) => {
+        const diffClass = `pq-diff-${q.difficulty || "application"}`;
+        const isAnswered = answers[i] !== undefined;
+        return (
+          <div key={i} className={`pq-block ${isAnswered ? "answered" : ""}`}>
+            <div className="pq-top">
+              <div className="pq-num">Q{i + 1} of {questionCount}</div>
+              <div style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
+                {q.skill_area && <span style={{ fontSize: ".62rem", fontFamily: "var(--mono)", color: "var(--text3)" }}>{q.skill_area}</span>}
+                <span className={`pq-difficulty ${diffClass}`}>{q.difficulty || "application"}</span>
+              </div>
+            </div>
+            <div className="pq-text">{q.question}</div>
+            {q.options && Array.isArray(q.options) && q.options.length > 0 ? (
+              <div className="pq-options">
+                {q.options.map((opt, j) => {
+                  const key = String.fromCharCode(65 + j);
+                  const sel = answers[i] === key;
+                  return (
+                    <div key={j} className={`pq-option ${sel ? "selected" : ""}`} onClick={() => setAnswers(a => ({ ...a, [i]: key }))}>
+                      <span className="pq-option-key">{key}</span>
+                      <span className="pq-option-text">{opt}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <textarea
+                className="pq-textarea"
+                placeholder="Write your answer here..."
+                value={answers[i] || ""}
+                onChange={e => setAnswers(a => ({ ...a, [i]: e.target.value }))}
+                rows={3}
+              />
+            )}
+          </div>
+        );
+      })}
+
+      <div className="run-row" style={{ paddingBottom: "2rem" }}>
+        <button className="run-btn" onClick={() => submitPaper(false)} disabled={answered === 0}>
+          Submit Paper
+        </button>
+        <span className="run-hint">{answered} of {questionCount} answered</span>
+        <button onClick={reset} style={{ background: "none", border: "1px solid var(--border)", color: "var(--text3)", fontFamily: "var(--font)", fontSize: ".75rem", padding: "6px 14px", borderRadius: "6px", cursor: "pointer" }}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+
+  // ── Result ────────────────────────────────────────────────────────────────
+  if (stage === "result" && result) {
+    const pct = result.score_pct ?? 0;
+    const passed = pct >= 70;
+    const scoreColor = pct >= 80 ? "var(--green)" : pct >= 65 ? "var(--amber)" : "var(--red)";
+    return (
+      <div className="paper-result">
+        <div className="result-banner">
+          <div>
+            <div style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".1em", marginBottom: ".375rem" }}>Final Score</div>
+            <div className="result-score-big" style={{ color: scoreColor }}>{pct}%</div>
+            <div style={{ fontSize: ".65rem", fontFamily: "var(--mono)", color: "var(--text3)", marginTop: ".25rem" }}>{result.correct ?? 0}/{questionCount} correct · {fmtTime(timeTaken)} taken</div>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div className="result-label" style={{ color: passed ? "var(--green)" : "var(--amber)" }}>
+              {passed ? "Above Pass Threshold" : "Below Pass Threshold"}
+            </div>
+            <div className="result-verdict">{result.summary || (passed ? "Good performance. Review the gaps below before booking your exam." : "Focus on the weak areas below and retry when scoring above 70%.")}</div>
+            {result.time_up && <div style={{ fontSize: ".68rem", color: "var(--amber)", fontFamily: "var(--mono)", marginTop: ".375rem" }}>Time expired — unanswered questions marked incorrect</div>}
+          </div>
+        </div>
+
+        {result.gaps?.length > 0 && (
+          <div className="block">
+            <div className="block-title">Study Plan Gaps</div>
+            <div style={{ fontSize: ".75rem", color: "var(--text2)", marginBottom: ".75rem" }}>These topics need more work. Go to your study plan to target them.</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: ".375rem" }}>
+              {result.gaps.map((g, i) => (
+                <span key={i} className="gap-link" onClick={() => onGotoStudyPlan && onGotoStudyPlan(g)}>
+                  {g} →
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="block">
+          <div className="block-title">Question Review</div>
+          {(result.reviewed || []).map((r, i) => (
+            <div key={i} className="pr-q-block">
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: ".625rem" }}>
+                <div className="pq-num">Q{i + 1} · {r.skill_area || ""}</div>
+                <span className={`pq-difficulty pq-diff-${r.difficulty || "application"}`}>{r.difficulty}</span>
+              </div>
+              <div className="pr-q-text">{r.question}</div>
+              {r.your_answer !== undefined && (
+                <div className={`pr-answer-row ${r.is_correct ? "correct-row" : "wrong-row"}`}>
+                  <span style={{ fontSize: ".68rem", fontFamily: "var(--mono)", color: "var(--text3)", minWidth: 80 }}>Your answer</span>
+                  <span style={{ fontSize: ".75rem", color: r.is_correct ? "var(--green)" : "var(--red)" }}>{r.your_answer || "(unanswered)"}</span>
+                </div>
+              )}
+              {r.correct_answer && !r.is_correct && (
+                <div className="pr-answer-row ideal-row">
+                  <span style={{ fontSize: ".68rem", fontFamily: "var(--mono)", color: "var(--text3)", minWidth: 80 }}>Correct</span>
+                  <span style={{ fontSize: ".75rem", color: "var(--blue2)" }}>{r.correct_answer}</span>
+                </div>
+              )}
+              {r.explanation && <div className="pr-explanation">{r.explanation}</div>}
+            </div>
+          ))}
+        </div>
+
+        <div className="run-row">
+          <button className="run-btn" onClick={reset}>New Paper</button>
+          <span className="run-hint">Difficulty: {difficulty} · {cert}</span>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 const LEARNERS = [
   { id:"L-1001", role:"Cloud Engineer", cert:"AZ-204", score:67, hours:18, outcome:"Fail", weak:["Azure Functions","Cosmos DB","API Management"], team:"TEAM-A", empId:"EMP-001", meetingHrs:22, focusHrs:10, slot:"Morning", risk:"High" },
   { id:"L-1002", role:"DevOps Engineer", cert:"AZ-400", score:82, hours:24, outcome:"Pass", weak:["Release Strategies"], team:"TEAM-A", empId:"EMP-002", meetingHrs:15, focusHrs:18, slot:"Afternoon", risk:"Low" },
@@ -666,9 +900,9 @@ function ManagerDashboard() {
 
   const insights = [
     { icon:"!", title:"Capacity-constrained learners", body:`${filtered.filter(l=>l.meetingHrs>20).length} learner(s) have over 20 meeting hours/week. Study completion is significantly lower in this group. Recommend manager intervention to free focus time.` },
-    { icon:"--", title:"Below exam threshold", body:`${filtered.filter(l=>l.score<70).length} learner(s) are below the 70% pass threshold. ${filtered.filter(l=>l.score<60).length} are critically behind with scores under 60%.` },
+    { icon:"v", title:"Below exam threshold", body:`${filtered.filter(l=>l.score<70).length} learner(s) are below the 70% pass threshold. ${filtered.filter(l=>l.score<60).length} are critically behind with scores under 60%.` },
     { icon:"+", title:"Exam-ready learners", body:`${filtered.filter(l=>l.score>=75).length} learner(s) have scored above 75% and are approaching exam readiness. Consider booking exam slots within 2 weeks.` },
-    { icon:"--", title:"Optimal study windows", body:`Morning slots show higher completion. ${filtered.filter(l=>l.slot==="Morning").length} learner(s) prefer mornings — prioritise protecting that time from meetings.` },
+    { icon:"t", title:"Optimal study windows", body:`Morning slots show higher completion. ${filtered.filter(l=>l.slot==="Morning").length} learner(s) prefer mornings — prioritise protecting that time from meetings.` },
   ];
 
   return (
@@ -749,7 +983,7 @@ function ManagerDashboard() {
           <div className="block-title" style={{ marginBottom:0 }}>Agent Insights</div>
           {insights.map((ins, i) => (
             <div className="insight-card" key={i}>
-                            <div>
+              <div>
                 <div className="insight-title">{ins.title}</div>
                 <div className="insight-body">{ins.body}</div>
               </div>
@@ -815,7 +1049,10 @@ export default function App() {
     if (!transcript.trim() && !audioFile) return;
     setLoading(true);
     setResult(null);
-    setStreamEvents([{ agent: "orchestrator", status: "started", message: "Connecting to agent pipeline...", data: {} }]);
+    setStreamEvents([
+      { agent: "orchestrator", status: "started", message: "Connecting to agent pipeline...", data: {} },
+      { agent: "readiness_coach", status: "thinking", message: `Evaluating ${cert} concept coverage and depth...`, data: {} },
+    ]);
     const ws = connectWS();
 
     // give WS time to open then send the payload so backend streams thinking
@@ -861,9 +1098,9 @@ export default function App() {
             <span className="nav-badge">HACKATHON</span>
           </div>
           <div className="nav-tabs">
-            {["analyze", "interview", "manager", "progress"].map(p => (
+            {["analyze", "practice", "interview", "manager", "progress"].map(p => (
               <button key={p} className={`nav-tab ${page === p ? "active" : ""}`} onClick={() => setPage(p)}>
-                {p.charAt(0).toUpperCase() + p.slice(1)}
+                {p === "practice" ? "Practice Paper" : p.charAt(0).toUpperCase() + p.slice(1)}
               </button>
             ))}
           </div>
@@ -891,7 +1128,7 @@ export default function App() {
               <div className="sidebar-section">Multi-Agent Pipeline</div>
               {AGENTS.map(a => (
                 <div key={a.key} style={{ display: "flex", gap: ".625rem", alignItems: "flex-start", padding: ".375rem 0" }}>
-                  <span style={{ fontSize: ".875rem" }}></span>
+                  <span style={{ fontSize: ".875rem" }}>{a.icon}</span>
                   <div>
                     <div style={{ fontSize: ".7rem", fontWeight: 600, color: "var(--text2)" }}>{a.label}</div>
                     <div style={{ fontSize: ".6rem", color: "var(--text3)", lineHeight: 1.5 }}>{a.desc}</div>
@@ -916,7 +1153,6 @@ export default function App() {
                 <div className="agents-row">
                   {AGENTS.map(a => (
                     <div className="agent-chip" key={a.key}>
-                      <div className="agent-icon"></div>
                       <div className="agent-label">{a.label}</div>
                       <div className="agent-desc">{a.desc}</div>
                     </div>
@@ -947,7 +1183,7 @@ export default function App() {
                       <div className="input-label">Upload audio recording</div>
                       <div className="upload-zone" onClick={() => fileRef.current?.click()}>
                         <input ref={fileRef} type="file" accept="audio/*" style={{ display: "none" }} onChange={e => setAudioFile(e.target.files[0])} />
-                                                <div className="upload-text">Click to upload MP3, WAV, M4A, or WebM<br />Your speech will be transcribed then analyzed</div>
+                        <div className="upload-text">Click to upload MP3, WAV, M4A, or WebM<br />Your speech will be transcribed then analyzed</div>
                       </div>
                       {audioFile && <div className="file-indicator">{audioFile.name}</div>}
                     </>
@@ -968,11 +1204,22 @@ export default function App() {
 
                 {!result && !loading && (
                   <div className="empty-state">
-                                        <div className="empty-text">Submit your answer above to get a full readiness report: concept coverage, technical depth score, 7-day study plan, and exam-style questions.</div>
+                    <div className="empty-text">Submit your answer above to get a full readiness report: concept coverage, technical depth score, 7-day study plan, and exam-style questions.</div>
                   </div>
                 )}
 
                 {result && <ResultView result={result} cert={cert} />}
+              </>
+            )}
+
+            {page === "practice" && (
+              <>
+                <div className="hero">
+                  <div className="hero-eyebrow">Practice Paper · {cert}</div>
+                  <div className="hero-title">Timed <em>mock exam</em></div>
+                  <div className="hero-sub">AI-generated questions via Foundry IQ. New questions every session. Scored with explanations and gap analysis.</div>
+                </div>
+                <PracticePaper cert={cert} onGotoStudyPlan={() => setPage("analyze")} />
               </>
             )}
 

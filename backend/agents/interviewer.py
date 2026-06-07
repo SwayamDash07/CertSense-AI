@@ -2,25 +2,26 @@
 Interviewer Agent — Investigative interview conductor.
 
 Flow:
-  Round 1 (fixed): "Tell me about the skills you want to work on"
-    → stores target_skills in memory
+  Round 1 (fixed per cert): Hardcoded opening question anchored to the cert track.
+    Randomly selected from 4 openers per cert so it varies each session.
 
-  Round 2+ :
+  Round 2+:
     User Answer
-      → AnswerAnalyzer.analyze()   (extract claims, signals, gaps)
-      → AnswerAnalyzer.evaluate()  (score content quality, give coaching tip)
-      → InterviewMemory update
-      → StrategySelector
-      → QuestionGenerator (grounded in what they said AND how well they said it)
+      -> AnswerAnalyzer.analyze()   (extract claims, signals, gaps)
+      -> AnswerAnalyzer.evaluate()  (score content quality, give coaching tip)
+      -> InterviewMemory update
+      -> StrategySelector
+      -> QuestionGenerator (grounded in what they said AND how well they said it)
 
 Rules:
-- First question is always about skills to improve — personalises all subsequent questions
+- First question is always anchored to the cert track — never generic
 - Every follow-up is grounded in the candidate's actual words
 - Per-answer evaluation is stored and returned so the final report shows per-round feedback
 - Never repeat deeply explored topics
 """
 
 import re
+import random
 from services.llm import LLM
 from agents.answer_analyzer import AnswerAnalyzer
 
@@ -35,6 +36,36 @@ STRATEGIES = [
     "Cost Optimization",
     "Troubleshooting",
     "Best Practices",
+]
+
+# ── Per-cert opening questions ────────────────────────────────────────────────
+# 4 per cert, randomly selected each session.
+# Broad enough to generate rich answers, specific enough to anchor the conversation.
+
+OPENING_QUESTIONS = {
+    "AZ-204": [
+        "Walk me through how you would design a serverless order processing system on Azure that handles traffic spikes and guarantees message delivery.",
+        "Explain how Azure Functions integrates with other Azure services using bindings, and describe a real scenario where you would use Durable Functions.",
+        "Describe how you would secure an Azure API Management instance, including authentication, rate limiting, and backend protection.",
+        "You need to build an event-driven microservices system on Azure. Walk me through the services you would choose and why.",
+    ],
+    "AZ-400": [
+        "Walk me through how you would design a CI/CD pipeline for a microservices application with zero-downtime deployments across multiple environments.",
+        "Explain the difference between blue-green and canary deployments, and describe when you would choose each strategy.",
+        "Describe how you would implement infrastructure as code for a multi-region Azure deployment using Azure DevOps pipelines.",
+        "You are tasked with improving the security posture of an existing CI/CD pipeline. What changes would you make and why?",
+    ],
+    "DP-203": [
+        "Walk me through how you would architect a data pipeline that ingests 1TB of JSON data daily and makes it queryable within one hour.",
+        "Explain the difference between a dedicated SQL pool and a serverless SQL pool in Azure Synapse, and when you would choose each.",
+        "Describe how you would handle late-arriving data in a streaming pipeline using Azure Stream Analytics or Event Hubs.",
+        "You need to build a lakehouse architecture for a retail company with both real-time and batch analytics requirements. What would you design?",
+    ],
+}
+
+# Fallback if cert not in the map
+_DEFAULT_OPENERS = [
+    "Walk me through a complex Azure architecture you would design for a high-availability, event-driven application.",
 ]
 
 # ── System prompt ─────────────────────────────────────────────────────────────
@@ -52,15 +83,12 @@ Hard rules:
 - Always relate questions back to the candidate's target certification track (AZ-204, AZ-400, or DP-203).
 - Challenge understanding without being hostile."""
 
-# ── Fixed opening question ─────────────────────────────────────────────────────
-
-OPENING_QUESTION = "Which Azure certification are you preparing for, and which topic areas do you feel least confident about right now?"
-
 # ── Prompt templates ──────────────────────────────────────────────────────────
 
 _NEXT_PROMPT = """Strategy for this question: {strategy}
 
-Candidate's target certification and weak areas: {target_skills}
+Candidate's target certification: {goal}
+Weak areas identified: {target_skills}
 
 Intelligence from their last answer:
 - Answer quality score: {answer_score}/10
@@ -81,7 +109,7 @@ Full conversation so far:
 Using the strategy "{strategy}", generate ONE exam-style follow-up question about Azure.
 - If the last answer score was below 6, push for more depth or a concrete Azure example on the same area.
 - If the last answer was strong, advance to a harder angle (tradeoffs, failure scenarios, cost implications).
-- Relate to their target certification track and weak areas when possible.
+- Always stay within the {goal} certification domain.
 Output the question only."""
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -94,24 +122,37 @@ def _history_to_text(history: list) -> str:
     return "\n".join(lines)
 
 
-def _extract_target_skills(answer: str) -> list:
-    """
-    Simple heuristic to pull skill keywords from the opening answer.
-    The LLM analysis will do the heavy lifting; this is a fast fallback.
-    """
+def _extract_target_skills(answer: str, goal: str) -> list:
     keywords = []
     lower = answer.lower()
-    skill_words = [
-        "app service", "functions", "cosmos db", "service bus", "event hub",
-        "api management", "key vault", "managed identity", "blob storage", "azure ad",
-        "devops", "pipelines", "kubernetes", "aks", "container", "terraform",
-        "synapse", "data factory", "databricks", "data lake", "stream analytics",
-        "security", "rbac", "networking", "vnet", "monitoring", "logic apps",
-    ]
+
+    cert_skills = {
+        "AZ-204": [
+            "app service", "functions", "cosmos db", "service bus", "event hub",
+            "api management", "key vault", "managed identity", "blob storage", "azure ad",
+            "durable functions", "logic apps", "container", "redis", "signalr",
+        ],
+        "AZ-400": [
+            "pipelines", "devops", "kubernetes", "aks", "terraform", "bicep",
+            "blue-green", "canary", "feature flags", "artifact", "release",
+            "shift-left", "sonarqube", "monitoring", "alert", "rollback",
+        ],
+        "DP-203": [
+            "synapse", "data factory", "databricks", "data lake", "stream analytics",
+            "event hub", "delta lake", "parquet", "polybase", "dedicated pool",
+            "serverless pool", "pipeline", "mapping dataflow", "adls", "purview",
+        ],
+    }
+
+    skill_words = cert_skills.get(goal.upper(), [
+        "azure", "function", "storage", "database", "networking",
+    ])
+
     for word in skill_words:
         if word in lower:
             keywords.append(word)
-    return keywords[:5] if keywords else ["Azure core services"]
+
+    return keywords[:5] if keywords else [f"{goal} core services"]
 
 
 def _pick_strategy(analysis: dict, memory: dict, round_number: int) -> str:
@@ -184,12 +225,18 @@ def _explored_topics(memory: dict) -> list:
     return [t for t, d in memory.get("depth", {}).items() if d >= 2]
 
 
+def _get_opening_question(goal: str) -> str:
+    cert = goal.upper()
+    openers = OPENING_QUESTIONS.get(cert, _DEFAULT_OPENERS)
+    return random.choice(openers)
+
+
 # ── Agent ─────────────────────────────────────────────────────────────────────
 
 class InterviewerAgent:
     """
     Investigative interviewer.
-    Round 1 is always the skills question.
+    Round 1 is always a hardcoded cert-specific question (randomly selected from 4 per cert).
     Round 2+ generates questions grounded in previous answers + per-answer evaluations.
     """
 
@@ -199,19 +246,20 @@ class InterviewerAgent:
 
     async def start(self, goal: str, max_rounds: int = 5) -> dict:
         """
-        Return the fixed opening question and initialise memory.
+        Return a cert-anchored opening question and initialise memory.
         No LLM call needed for round 1.
         """
+        opening = _get_opening_question(goal)
         memory = {
             "goal": goal,
             "target_skills": [],
             "topics_covered": [],
             "claims_explored": [],
             "depth": {},
-            "question_history": [OPENING_QUESTION],
-            "answer_evaluations": [],  # populated from round 2 onwards
+            "question_history": [opening],
+            "answer_evaluations": [],
         }
-        return {"question": OPENING_QUESTION, "memory": memory, "round": 1}
+        return {"question": opening, "memory": memory, "round": 1}
 
     async def next_question(
         self,
@@ -228,15 +276,15 @@ class InterviewerAgent:
         if not history:
             return await self.start(goal, max_rounds)
 
-        last_turn    = history[-1]
+        last_turn     = history[-1]
         last_question = last_turn.get("question", "")
         last_answer   = last_turn.get("answer", "")
 
-        # ── Round 2 special: extract target skills from opening answer ─────────
+        # ── Round 2: extract target skills from first answer ──────────────────
         if round_number == 2:
             skill_analysis = await self.analyzer.analyze(last_question, last_answer)
-            extracted = skill_analysis.get("skills", []) + skill_analysis.get("interesting_topics", [])
-            heuristic = _extract_target_skills(last_answer)
+            extracted  = skill_analysis.get("skills", []) + skill_analysis.get("interesting_topics", [])
+            heuristic  = _extract_target_skills(last_answer, goal)
             target_skills = list(dict.fromkeys(extracted + heuristic))[:6]
             memory["target_skills"] = target_skills
         else:
@@ -248,7 +296,7 @@ class InterviewerAgent:
         # ── Step 2: Evaluate content quality of last answer ───────────────────
         evaluation = await self.analyzer.evaluate(last_question, last_answer, target_skills)
 
-        # Store evaluation in memory so final report can surface it
+        # Store evaluation in memory
         memory.setdefault("answer_evaluations", [])
         memory["answer_evaluations"].append({
             "round": round_number - 1,
@@ -268,6 +316,7 @@ class InterviewerAgent:
 
         prompt = _NEXT_PROMPT.format(
             strategy=strategy,
+            goal=goal.upper(),
             target_skills=", ".join(target_skills) if target_skills else "not yet identified",
             answer_score=evaluation.get("overall_answer_score", 5.0),
             verdict=evaluation.get("verdict", ""),
@@ -294,7 +343,7 @@ class InterviewerAgent:
             "round": round_number,
             "strategy": strategy,
             "analysis": analysis,
-            "last_answer_evaluation": evaluation,  # sent to frontend for live feedback
+            "last_answer_evaluation": evaluation,
         }
 
     async def _call(self, user_prompt: str) -> str:
