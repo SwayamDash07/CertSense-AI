@@ -16,196 +16,1083 @@ const AGENTS = [
 ];
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+
   *{box-sizing:border-box;margin:0;padding:0}
+
   :root{
-    --bg:#050d1a;--bg2:#091224;--bg3:#0d1a30;--bg4:#111f3a;
-    --border:#1e3a5f;--border2:#2a4f7a;
-    --blue:#3b82f6;--blue2:#60a5fa;--blue3:#1d4ed8;
-    --purple:#8b5cf6;--cyan:#06b6d4;--green:#10b981;--red:#ef4444;--amber:#f59e0b;
-    --text:#e2eaff;--text2:#94b3d4;--text3:#4a7098;
-    --font:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
+    --bg:#000308;
+    --bg2:#020b18;
+    --bg3:#040f20;
+    --bg4:#071528;
+    --bg5:#0a1c35;
+    --border:#0d2540;
+    --border2:#1a3d5c;
+    --border3:#2a5f8a;
+    --blue:#1d6cf0;
+    --blue2:#4d9fff;
+    --blue3:#0a3d8f;
+    --blue4:#0066ff;
+    --glow:#1d6cf088;
+    --cyan:#00d4ff;
+    --cyan2:#00aacc;
+    --purple:#7c3aed;
+    --green:#00ff88;
+    --green2:#00cc6a;
+    --red:#ff3355;
+    --amber:#ffaa00;
+    --text:#e8f4ff;
+    --text2:#7aaed4;
+    --text3:#2d5a7a;
+    --font:'Space Grotesk',sans-serif;
+    --mono:'JetBrains Mono',monospace;
   }
-  body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
-  .app{display:grid;grid-template-rows:56px 1fr;min-height:100vh}
-  .nav{background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 2rem;gap:1.5rem;position:sticky;top:0;z-index:100}
-  .nav-logo{font-size:1.1rem;font-weight:700;letter-spacing:-.5px;color:var(--blue2);display:flex;align-items:center;gap:.5rem}
-  .nav-logo span{color:var(--text);font-weight:400}
-  .nav-badge{font-size:.6rem;font-family:var(--mono);background:var(--blue3);color:var(--blue2);padding:2px 6px;border-radius:3px;letter-spacing:.05em}
-  .nav-tabs{display:flex;gap:4px;margin-left:auto}
-  .nav-tab{background:none;border:none;color:var(--text2);font-family:var(--font);font-size:.8rem;padding:6px 12px;border-radius:6px;cursor:pointer;transition:all .2s;font-weight:500;letter-spacing:.02em}
-  .nav-tab:hover{color:var(--text);background:var(--bg3)}
-  .nav-tab.active{color:var(--blue2);background:var(--bg4)}
-  .main{display:grid;grid-template-columns:260px 1fr;gap:0;overflow:hidden;height:calc(100vh - 56px)}
-  .sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:1.5rem 1rem;overflow-y:auto;display:flex;flex-direction:column;gap:1rem}
-  .sidebar-section{font-size:.65rem;font-family:var(--mono);color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.25rem}
-  .cert-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
-  .cert-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent-color,var(--blue));opacity:0;transition:opacity .2s}
-  .cert-card:hover{border-color:var(--border2);background:var(--bg4)}
-  .cert-card.selected{border-color:var(--accent-color,var(--blue));background:var(--bg4)}
+
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* ── Background grid + glow ───────────────────────────────── */
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(29,108,240,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(29,108,240,.03) 1px, transparent 1px);
+    background-size:40px 40px;
+    pointer-events:none;
+    z-index:0;
+  }
+  body::after{
+    content:'';
+    position:fixed;
+    top:-20%;
+    left:50%;
+    transform:translateX(-50%);
+    width:800px;
+    height:400px;
+    background:radial-gradient(ellipse, rgba(29,108,240,.08) 0%, transparent 70%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .app{
+    display:grid;
+    grid-template-rows:58px 1fr;
+    min-height:100vh;
+    position:relative;
+    z-index:1;
+  }
+
+  /* ── Nav ──────────────────────────────────────────────────── */
+  .nav{
+    background:rgba(2,11,24,.85);
+    backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    padding:0 2rem;
+    gap:1.5rem;
+    position:sticky;
+    top:0;
+    z-index:100;
+    box-shadow:0 1px 0 rgba(29,108,240,.1), 0 4px 20px rgba(0,0,0,.4);
+  }
+  .nav::after{
+    content:'';
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(29,108,240,.4), rgba(0,212,255,.3), transparent);
+  }
+
+  .nav-logo{
+    font-size:1.05rem;
+    font-weight:700;
+    letter-spacing:-.02em;
+    color:var(--text);
+    display:flex;
+    align-items:center;
+    gap:.375rem;
+  }
+  .nav-logo .logo-cert{
+    color:var(--blue2);
+    font-weight:700;
+  }
+  .nav-logo .logo-sense{
+    color:var(--text);
+    font-weight:300;
+  }
+  .nav-logo .logo-ai{
+    color:var(--cyan);
+    font-weight:700;
+  }
+  .nav-badge{
+    font-size:.55rem;
+    font-family:var(--mono);
+    background:linear-gradient(135deg,rgba(29,108,240,.2),rgba(0,212,255,.1));
+    color:var(--cyan);
+    padding:2px 8px;
+    border-radius:3px;
+    letter-spacing:.1em;
+    border:1px solid rgba(0,212,255,.2);
+    text-transform:uppercase;
+  }
+
+  .nav-tabs{display:flex;gap:2px;margin-left:auto}
+  .nav-tab{
+    background:none;
+    border:none;
+    color:var(--text3);
+    font-family:var(--font);
+    font-size:.78rem;
+    padding:7px 14px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:all .2s;
+    font-weight:500;
+    letter-spacing:.02em;
+    position:relative;
+  }
+  .nav-tab:hover{color:var(--text2);background:rgba(29,108,240,.06)}
+  .nav-tab.active{
+    color:var(--blue2);
+    background:rgba(29,108,240,.1);
+    border:1px solid rgba(29,108,240,.2);
+  }
+  .nav-tab.active::after{
+    content:'';
+    position:absolute;
+    bottom:-1px;
+    left:20%;
+    right:20%;
+    height:1px;
+    background:var(--blue2);
+    box-shadow:0 0 8px var(--blue2);
+  }
+
+  /* ── Layout ───────────────────────────────────────────────── */
+  .main{
+    display:grid;
+    grid-template-columns:256px 1fr;
+    overflow:hidden;
+    height:calc(100vh - 58px);
+  }
+
+  /* ── Sidebar ──────────────────────────────────────────────── */
+  .sidebar{
+    background:var(--bg2);
+    border-right:1px solid var(--border);
+    padding:1.25rem .875rem;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:.875rem;
+    scrollbar-width:thin;
+    scrollbar-color:var(--border2) transparent;
+  }
+  .sidebar-section{
+    font-size:.58rem;
+    font-family:var(--mono);
+    color:var(--text3);
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    padding:0 .25rem;
+    margin-bottom:.125rem;
+  }
+
+  .cert-card{
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:.75rem .875rem;
+    cursor:pointer;
+    transition:all .25s cubic-bezier(.4,0,.2,1);
+    position:relative;
+    overflow:hidden;
+  }
+  .cert-card::before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;
+    height:2px;
+    background:linear-gradient(90deg, var(--accent-color,var(--blue)), var(--cyan));
+    opacity:0;
+    transition:opacity .25s;
+  }
+  .cert-card::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at 0% 50%, rgba(29,108,240,.04) 0%, transparent 60%);
+    opacity:0;
+    transition:opacity .3s;
+  }
+  .cert-card:hover{
+    border-color:var(--border2);
+    background:var(--bg4);
+    transform:translateX(2px);
+  }
+  .cert-card:hover::after{opacity:1}
+  .cert-card.selected{
+    border-color:var(--accent-color,var(--blue));
+    background:var(--bg4);
+    box-shadow:0 0 20px rgba(29,108,240,.08), inset 0 0 20px rgba(29,108,240,.04);
+  }
   .cert-card.selected::before{opacity:1}
-  .cert-row{display:flex;align-items:center;gap:.625rem}
-  .cert-badge{font-size:.6rem;font-family:var(--mono);font-weight:500;padding:3px 7px;border-radius:4px;letter-spacing:.05em;background:rgba(255,255,255,.06);color:var(--text2)}
-  .cert-name{font-size:.75rem;font-weight:600;letter-spacing:.02em}
-  .cert-sub{font-size:.65rem;color:var(--text3);margin-top:2px}
-  .content{overflow-y:auto;display:flex;flex-direction:column}
-  .hero{padding:2.5rem 2rem 1.5rem;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--bg2) 0%,transparent 100%)}
-  .hero-eyebrow{font-size:.65rem;font-family:var(--mono);color:var(--blue);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.75rem}
-  .hero-title{font-size:2rem;font-weight:700;line-height:1.1;letter-spacing:-.03em;margin-bottom:.5rem}
-  .hero-title em{font-style:normal;color:var(--blue2)}
-  .hero-sub{font-size:.875rem;color:var(--text2);line-height:1.6;max-width:540px}
-  .agents-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;padding:1.5rem 2rem;border-bottom:1px solid var(--border)}
-  .agent-chip{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.75rem;text-align:center}
-  .agent-icon{font-size:1.25rem;margin-bottom:.375rem}
-  .agent-label{font-size:.65rem;font-weight:600;letter-spacing:.03em;color:var(--text2);margin-bottom:2px}
-  .agent-desc{font-size:.6rem;color:var(--text3);line-height:1.4}
-  .input-zone{padding:1.5rem 2rem;border-bottom:1px solid var(--border)}
-  .input-label{font-size:.65rem;font-family:var(--mono);color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.625rem;display:flex;align-items:center;gap:.5rem}
-  .mode-switch{display:flex;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:3px;gap:2px;width:fit-content;margin-bottom:1.25rem}
-  .mode-btn{background:none;border:none;color:var(--text3);font-family:var(--font);font-size:.75rem;padding:5px 14px;border-radius:5px;cursor:pointer;transition:all .2s;font-weight:500}
-  .mode-btn.active{background:var(--bg4);color:var(--text);border:1px solid var(--border2)}
-  textarea{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.8rem;border-radius:10px;padding:1rem;resize:vertical;min-height:120px;outline:none;transition:border .2s;line-height:1.6}
-  textarea:focus{border-color:var(--blue)}
+
+  .cert-row{display:flex;align-items:center;gap:.5rem}
+  .cert-badge{
+    font-size:.58rem;
+    font-family:var(--mono);
+    font-weight:600;
+    padding:2px 7px;
+    border-radius:4px;
+    letter-spacing:.06em;
+    background:rgba(29,108,240,.12);
+    color:var(--blue2);
+    border:1px solid rgba(29,108,240,.2);
+  }
+  .cert-name{font-size:.72rem;font-weight:600;letter-spacing:.01em}
+  .cert-sub{font-size:.62rem;color:var(--text3);margin-top:2px}
+
+  /* ── Agent pipeline sidebar ───────────────────────────────── */
+  .agent-chip{
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:.625rem .75rem;
+    transition:all .2s;
+    position:relative;
+    overflow:hidden;
+  }
+  .agent-chip::before{
+    content:'';
+    position:absolute;
+    left:0;top:0;bottom:0;
+    width:2px;
+    background:linear-gradient(180deg,var(--blue),var(--cyan));
+    opacity:.3;
+  }
+  .agent-label{font-size:.68rem;font-weight:600;color:var(--text2);letter-spacing:.01em}
+  .agent-desc{font-size:.6rem;color:var(--text3);line-height:1.4;margin-top:1px}
+
+  .grounded-badge{
+    background:linear-gradient(135deg,rgba(0,212,255,.05),rgba(29,108,240,.08));
+    border:1px solid rgba(0,212,255,.15);
+    border-radius:8px;
+    padding:.625rem .875rem;
+    font-size:.65rem;
+    font-family:var(--mono);
+    color:var(--cyan2);
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    margin-top:auto;
+  }
+  .grounded-badge::before{
+    content:'';
+    width:6px;height:6px;
+    border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 6px var(--cyan);
+    flex-shrink:0;
+    animation:glow-pulse 2s ease-in-out infinite;
+  }
+  @keyframes glow-pulse{
+    0%,100%{box-shadow:0 0 4px var(--cyan);opacity:1}
+    50%{box-shadow:0 0 10px var(--cyan),0 0 20px rgba(0,212,255,.3);opacity:.8}
+  }
+
+  /* ── Content ──────────────────────────────────────────────── */
+  .content{
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    scrollbar-width:thin;
+    scrollbar-color:var(--border2) transparent;
+  }
+
+  /* ── Hero ─────────────────────────────────────────────────── */
+  .hero{
+    padding:2.5rem 2.5rem 2rem;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg, rgba(4,15,32,.8) 0%, transparent 100%);
+    position:relative;
+    overflow:hidden;
+    animation:hero-in .5s ease both;
+  }
+  .hero::before{
+    content:'';
+    position:absolute;
+    top:0;right:0;
+    width:40%;height:100%;
+    background:radial-gradient(ellipse at right top, rgba(29,108,240,.06), transparent 70%);
+    pointer-events:none;
+  }
+  @keyframes hero-in{
+    from{opacity:0;transform:translateY(-8px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  .hero-eyebrow{
+    font-size:.62rem;
+    font-family:var(--mono);
+    color:var(--cyan);
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    margin-bottom:.875rem;
+    display:flex;
+    align-items:center;
+    gap:.625rem;
+    animation:fade-up .4s .1s ease both;
+  }
+  .hero-eyebrow::before{
+    content:'';
+    display:inline-block;
+    width:20px;height:1px;
+    background:var(--cyan);
+    box-shadow:0 0 6px var(--cyan);
+  }
+  .hero-title{
+    font-size:2.1rem;
+    font-weight:700;
+    line-height:1.1;
+    letter-spacing:-.04em;
+    margin-bottom:.625rem;
+    animation:fade-up .4s .15s ease both;
+  }
+  .hero-title em{
+    font-style:normal;
+    background:linear-gradient(135deg,var(--blue2),var(--cyan));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .hero-sub{
+    font-size:.85rem;
+    color:var(--text2);
+    line-height:1.65;
+    max-width:520px;
+    font-weight:300;
+    animation:fade-up .4s .2s ease both;
+  }
+
+  @keyframes fade-up{
+    from{opacity:0;transform:translateY(10px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  /* ── Input zone ───────────────────────────────────────────── */
+  .input-zone{
+    padding:1.75rem 2.5rem;
+    border-bottom:1px solid var(--border);
+  }
+  .input-label{
+    font-size:.62rem;
+    font-family:var(--mono);
+    color:var(--text3);
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    margin-bottom:.75rem;
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+  }
+
+  .mode-switch{
+    display:flex;
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:3px;
+    gap:2px;
+    width:fit-content;
+    margin-bottom:1.25rem;
+  }
+  .mode-btn{
+    background:none;
+    border:none;
+    color:var(--text3);
+    font-family:var(--font);
+    font-size:.75rem;
+    padding:5px 16px;
+    border-radius:5px;
+    cursor:pointer;
+    transition:all .2s;
+    font-weight:500;
+  }
+  .mode-btn.active{
+    background:rgba(29,108,240,.15);
+    color:var(--blue2);
+    border:1px solid rgba(29,108,240,.25);
+    box-shadow:0 0 12px rgba(29,108,240,.1);
+  }
+
+  textarea{
+    width:100%;
+    background:rgba(4,15,32,.6);
+    border:1px solid var(--border2);
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:.8rem;
+    border-radius:10px;
+    padding:1rem 1.125rem;
+    resize:vertical;
+    min-height:130px;
+    outline:none;
+    transition:all .2s;
+    line-height:1.7;
+    backdrop-filter:blur(4px);
+  }
+  textarea:focus{
+    border-color:var(--blue);
+    box-shadow:0 0 0 3px rgba(29,108,240,.08), 0 0 20px rgba(29,108,240,.05);
+    background:rgba(4,15,32,.8);
+  }
   textarea::placeholder{color:var(--text3)}
-  .run-row{display:flex;align-items:center;gap:1rem;margin-top:1rem}
-  .run-btn{background:var(--blue3);color:#fff;border:none;font-family:var(--font);font-size:.875rem;font-weight:600;padding:.75rem 2rem;border-radius:8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:.5rem;letter-spacing:.02em}
-  .run-btn:hover{background:var(--blue)}
-  .run-btn:disabled{opacity:.4;cursor:not-allowed}
-  .run-btn.loading{background:var(--bg4);color:var(--text3);border:1px solid var(--border)}
-  .run-hint{font-size:.7rem;color:var(--text3)}
-  .results{padding:1.5rem 2rem;flex:1}
-  .result-tabs{display:flex;gap:4px;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:.75rem}
-  .result-tab{background:none;border:none;color:var(--text3);font-family:var(--font);font-size:.75rem;padding:6px 14px;border-radius:6px;cursor:pointer;transition:all .2s;font-weight:500}
-  .result-tab:hover{color:var(--text);background:var(--bg3)}
-  .result-tab.active{color:var(--blue2);background:var(--bg3)}
-  .score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.875rem;margin-bottom:1.5rem}
-  .score-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;position:relative;overflow:hidden}
-  .score-card::after{content:attr(data-score);position:absolute;right:12px;top:10px;font-size:1.75rem;font-weight:700;font-family:var(--mono);color:var(--accent,var(--blue2));opacity:.15}
-  .score-label{font-size:.65rem;font-family:var(--mono);color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.375rem}
-  .score-val{font-size:2rem;font-weight:700;font-family:var(--mono);color:var(--accent,var(--blue2))}
-  .score-bar{height:3px;background:var(--border);border-radius:2px;margin-top:.625rem;overflow:hidden}
-  .score-fill{height:100%;border-radius:2px;background:var(--accent,var(--blue));transition:width 1s ease}
-  .block{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:.875rem}
-  .block-title{font-size:.7rem;font-family:var(--mono);color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.875rem;display:flex;align-items:center;gap:.5rem}
-  .block-title::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--blue)}
+
+  .run-row{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    margin-top:1.125rem;
+  }
+  .run-btn{
+    background:linear-gradient(135deg,var(--blue3),var(--blue4));
+    color:#fff;
+    border:none;
+    font-family:var(--font);
+    font-size:.875rem;
+    font-weight:600;
+    padding:.75rem 2rem;
+    border-radius:8px;
+    cursor:pointer;
+    transition:all .2s;
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    letter-spacing:.02em;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 4px 20px rgba(29,108,240,.25);
+  }
+  .run-btn::before{
+    content:'';
+    position:absolute;
+    top:0;left:-100%;
+    width:100%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
+    transition:left .4s;
+  }
+  .run-btn:hover{
+    background:linear-gradient(135deg,var(--blue4),var(--blue2));
+    box-shadow:0 6px 30px rgba(29,108,240,.4), 0 0 20px rgba(29,108,240,.2);
+    transform:translateY(-1px);
+  }
+  .run-btn:hover::before{left:100%}
+  .run-btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;transform:none}
+  .run-hint{font-size:.7rem;color:var(--text3);font-family:var(--mono)}
+
+  /* ── Stream panel ─────────────────────────────────────────── */
+  .stream-panel{
+    background:rgba(0,3,8,.8);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:1rem 1.125rem;
+    font-family:var(--mono);
+    font-size:.7rem;
+    line-height:1.9;
+    color:var(--text2);
+    max-height:220px;
+    overflow-y:auto;
+    margin-bottom:1rem;
+    scrollbar-width:thin;
+    scrollbar-color:var(--border2) transparent;
+    position:relative;
+  }
+  .stream-panel::before{
+    content:'AGENT STREAM';
+    position:absolute;
+    top:.625rem;right:.875rem;
+    font-size:.52rem;
+    color:var(--text3);
+    letter-spacing:.15em;
+  }
+  .stream-line{
+    display:flex;
+    gap:.75rem;
+    align-items:flex-start;
+    animation:stream-in .2s ease both;
+  }
+  @keyframes stream-in{
+    from{opacity:0;transform:translateX(-4px)}
+    to{opacity:1;transform:translateX(0)}
+  }
+  .stream-agent{
+    color:var(--blue2);
+    min-width:100px;
+    font-weight:500;
+  }
+  .stream-status{color:var(--green);font-weight:600}
+  .stream-status.thinking{
+    color:var(--amber);
+    animation:thinking-pulse .8s ease-in-out infinite alternate;
+  }
+  @keyframes thinking-pulse{
+    from{opacity:.6}to{opacity:1}
+  }
+  .stream-status.error{color:var(--red)}
+
+  /* ── Results ──────────────────────────────────────────────── */
+  .results{padding:1.75rem 2.5rem;flex:1}
+
+  .result-tabs{
+    display:flex;
+    gap:3px;
+    margin-bottom:1.75rem;
+    border-bottom:1px solid var(--border);
+    padding-bottom:.625rem;
+  }
+  .result-tab{
+    background:none;
+    border:none;
+    color:var(--text3);
+    font-family:var(--font);
+    font-size:.75rem;
+    padding:6px 16px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:all .2s;
+    font-weight:500;
+    letter-spacing:.02em;
+  }
+  .result-tab:hover{color:var(--text2);background:rgba(29,108,240,.06)}
+  .result-tab.active{
+    color:var(--blue2);
+    background:rgba(29,108,240,.1);
+    border:1px solid rgba(29,108,240,.2);
+    box-shadow:0 0 10px rgba(29,108,240,.08);
+  }
+
+  /* ── Score cards ──────────────────────────────────────────── */
+  .score-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:.875rem;
+    margin-bottom:1.75rem;
+  }
+  .score-card{
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:1.125rem;
+    position:relative;
+    overflow:hidden;
+    transition:all .25s;
+    animation:card-in .4s ease both;
+  }
+  .score-card:hover{
+    border-color:var(--border2);
+    transform:translateY(-2px);
+    box-shadow:0 8px 24px rgba(0,0,0,.3);
+  }
+  .score-card::before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;
+    height:1px;
+    background:linear-gradient(90deg,transparent,var(--accent,var(--blue2)),transparent);
+    opacity:.4;
+  }
+  .score-card::after{
+    content:attr(data-score);
+    position:absolute;
+    right:14px;top:12px;
+    font-size:1.6rem;
+    font-weight:700;
+    font-family:var(--mono);
+    color:var(--accent,var(--blue2));
+    opacity:.08;
+  }
+  @keyframes card-in{
+    from{opacity:0;transform:translateY(8px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .score-label{
+    font-size:.6rem;
+    font-family:var(--mono);
+    color:var(--text3);
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    margin-bottom:.5rem;
+  }
+  .score-val{
+    font-size:2.1rem;
+    font-weight:700;
+    font-family:var(--mono);
+    color:var(--accent,var(--blue2));
+    line-height:1;
+    text-shadow:0 0 20px var(--accent,rgba(77,159,255,.3));
+  }
+  .score-bar{
+    height:2px;
+    background:var(--border);
+    border-radius:2px;
+    margin-top:.75rem;
+    overflow:hidden;
+  }
+  .score-fill{
+    height:100%;
+    border-radius:2px;
+    background:linear-gradient(90deg,var(--accent,var(--blue3)),var(--accent,var(--blue2)));
+    transition:width 1.2s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 0 8px var(--accent,rgba(29,108,240,.4));
+  }
+
+  /* ── Blocks ───────────────────────────────────────────────── */
+  .block{
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:1.375rem;
+    margin-bottom:1rem;
+    transition:border .2s;
+    animation:card-in .4s ease both;
+  }
+  .block:hover{border-color:var(--border2)}
+  .block-title{
+    font-size:.62rem;
+    font-family:var(--mono);
+    color:var(--text3);
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    margin-bottom:1rem;
+    display:flex;
+    align-items:center;
+    gap:.625rem;
+  }
+  .block-title::before{
+    content:'';
+    display:inline-block;
+    width:6px;height:6px;
+    border-radius:50%;
+    background:var(--blue2);
+    box-shadow:0 0 6px var(--blue2);
+  }
+
+  /* ── Tags ─────────────────────────────────────────────────── */
   .prose{font-size:.8rem;color:var(--text2);line-height:1.7}
   .tag-row{display:flex;flex-wrap:wrap;gap:.375rem;margin-top:.625rem}
-  .tag{font-size:.65rem;font-family:var(--mono);padding:3px 9px;border-radius:4px;background:rgba(59,130,246,.1);color:var(--blue2);border:1px solid rgba(59,130,246,.2)}
-  .tag.green{background:rgba(16,185,129,.1);color:var(--green);border-color:rgba(16,185,129,.2)}
-  .tag.amber{background:rgba(245,158,11,.1);color:var(--amber);border-color:rgba(245,158,11,.2)}
-  .tag.red{background:rgba(239,68,68,.1);color:var(--red);border-color:rgba(239,68,68,.2)}
-  .stream-panel{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1rem;font-family:var(--mono);font-size:.72rem;line-height:1.8;color:var(--text2);max-height:240px;overflow-y:auto;margin-bottom:1rem}
-  .stream-line{display:flex;gap:.75rem;align-items:flex-start}
-  .stream-agent{color:var(--blue);min-width:90px;font-weight:500}
-  .stream-status{color:var(--green)}
-  .stream-status.thinking{color:var(--amber)}
-  .stream-status.error{color:var(--red)}
-  .spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--blue2);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4rem 2rem;color:var(--text3);text-align:center;gap:.75rem}
-  .empty-icon{font-size:3rem;opacity:.3}
-  .empty-text{font-size:.875rem;line-height:1.6;max-width:320px}
-  .plan-day{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.875rem 1rem;margin-bottom:.625rem;display:flex;gap:1rem;align-items:flex-start}
-  .plan-day-num{font-family:var(--mono);font-size:.65rem;color:var(--blue);background:rgba(59,130,246,.1);padding:4px 8px;border-radius:4px;white-space:nowrap;border:1px solid rgba(59,130,246,.2)}
+  .tag{
+    font-size:.62rem;
+    font-family:var(--mono);
+    padding:3px 9px;
+    border-radius:4px;
+    background:rgba(29,108,240,.08);
+    color:var(--blue2);
+    border:1px solid rgba(29,108,240,.15);
+    transition:all .15s;
+  }
+  .tag:hover{background:rgba(29,108,240,.15);border-color:rgba(29,108,240,.3)}
+  .tag.green{background:rgba(0,255,136,.06);color:var(--green);border-color:rgba(0,255,136,.15)}
+  .tag.amber{background:rgba(255,170,0,.08);color:var(--amber);border-color:rgba(255,170,0,.2)}
+  .tag.red{background:rgba(255,51,85,.08);color:var(--red);border-color:rgba(255,51,85,.2)}
+
+  /* ── Study plan ───────────────────────────────────────────── */
+  .plan-day{
+    background:rgba(4,15,32,.6);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:.875rem 1rem;
+    margin-bottom:.625rem;
+    display:flex;
+    gap:1rem;
+    align-items:flex-start;
+    transition:all .2s;
+    animation:card-in .3s ease both;
+  }
+  .plan-day:hover{border-color:var(--border2);background:var(--bg3)}
+  .plan-day-num{
+    font-family:var(--mono);
+    font-size:.6rem;
+    color:var(--blue2);
+    background:rgba(29,108,240,.1);
+    padding:4px 9px;
+    border-radius:5px;
+    white-space:nowrap;
+    border:1px solid rgba(29,108,240,.2);
+    font-weight:600;
+    letter-spacing:.06em;
+    box-shadow:0 0 10px rgba(29,108,240,.1);
+  }
   .plan-day-content{font-size:.78rem;color:var(--text2);line-height:1.6;flex:1}
-  .q-block{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-bottom:.75rem}
-  .q-number{font-family:var(--mono);font-size:.6rem;color:var(--text3);margin-bottom:.375rem}
-  .q-text{font-size:.8rem;font-weight:500;color:var(--text);margin-bottom:.625rem;line-height:1.5}
-  .q-option{font-size:.75rem;color:var(--text2);padding:5px 0;display:flex;gap:.5rem}
+
+  /* ── Question blocks ──────────────────────────────────────── */
+  .q-block{
+    background:rgba(4,15,32,.6);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:1.125rem;
+    margin-bottom:.875rem;
+    transition:all .2s;
+    animation:card-in .3s ease both;
+  }
+  .q-block:hover{border-color:var(--border2)}
+  .q-number{
+    font-family:var(--mono);
+    font-size:.58rem;
+    color:var(--text3);
+    margin-bottom:.5rem;
+    letter-spacing:.08em;
+  }
+  .q-text{
+    font-size:.82rem;
+    font-weight:500;
+    color:var(--text);
+    margin-bottom:.75rem;
+    line-height:1.55;
+  }
+  .q-option{
+    font-size:.75rem;
+    color:var(--text2);
+    padding:5px 0;
+    display:flex;
+    gap:.625rem;
+  }
   .q-option span:first-child{color:var(--text3);font-family:var(--mono);min-width:16px}
-  .citation-row{display:flex;align-items:center;gap:.375rem;margin-top:.5rem;font-size:.65rem;color:var(--text3);font-family:var(--mono)}
-  .citation-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
-  .rec-box{background:linear-gradient(135deg,rgba(29,78,216,.15),rgba(139,92,246,.08));border:1px solid rgba(59,130,246,.25);border-radius:10px;padding:1.25rem;font-size:.82rem;color:var(--text);line-height:1.7}
-  .interview-q{font-size:.95rem;font-weight:600;line-height:1.5;margin-bottom:1.25rem;color:var(--text)}
-  .interview-round{font-size:.65rem;font-family:var(--mono);color:var(--text3);margin-bottom:.875rem}
-  .upload-zone{border:1.5px dashed var(--border2);border-radius:10px;padding:2.5rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg2)}
-  .upload-zone:hover{border-color:var(--blue);background:var(--bg3)}
-  .upload-icon{font-size:2rem;margin-bottom:.75rem;opacity:.5}
+
+  .citation-row{
+    display:flex;
+    align-items:center;
+    gap:.375rem;
+    margin-top:.625rem;
+    font-size:.62rem;
+    color:var(--text3);
+    font-family:var(--mono);
+  }
+  .citation-dot{
+    width:5px;height:5px;
+    border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 4px var(--cyan);
+  }
+
+  /* ── Rec box ──────────────────────────────────────────────── */
+  .rec-box{
+    background:linear-gradient(135deg,rgba(29,108,240,.08),rgba(0,212,255,.04));
+    border:1px solid rgba(29,108,240,.2);
+    border-radius:12px;
+    padding:1.375rem;
+    font-size:.82rem;
+    color:var(--text);
+    line-height:1.7;
+    position:relative;
+    overflow:hidden;
+  }
+  .rec-box::before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;
+    height:1px;
+    background:linear-gradient(90deg,transparent,var(--blue2),var(--cyan),transparent);
+  }
+
+  /* ── Interview ────────────────────────────────────────────── */
+  .interview-q{
+    font-size:1rem;
+    font-weight:600;
+    line-height:1.55;
+    margin-bottom:1.375rem;
+    color:var(--text);
+    padding:1.25rem;
+    background:rgba(29,108,240,.05);
+    border:1px solid rgba(29,108,240,.15);
+    border-radius:10px;
+    border-left:3px solid var(--blue2);
+    animation:fade-up .3s ease both;
+  }
+  .interview-round{
+    font-size:.62rem;
+    font-family:var(--mono);
+    color:var(--text3);
+    margin-bottom:1rem;
+    letter-spacing:.08em;
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+  }
+  .interview-round::before{
+    content:'';
+    display:inline-block;
+    width:8px;height:1px;
+    background:var(--blue);
+  }
+
+  /* ── Upload zone ──────────────────────────────────────────── */
+  .upload-zone{
+    border:1.5px dashed var(--border2);
+    border-radius:12px;
+    padding:2.5rem;
+    text-align:center;
+    cursor:pointer;
+    transition:all .25s;
+    background:rgba(4,15,32,.4);
+    position:relative;
+    overflow:hidden;
+  }
+  .upload-zone:hover{
+    border-color:var(--blue);
+    background:rgba(29,108,240,.04);
+    box-shadow:0 0 30px rgba(29,108,240,.06);
+  }
   .upload-text{font-size:.8rem;color:var(--text3);line-height:1.6}
-  .file-indicator{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--green);font-family:var(--mono);margin-top:.75rem;padding:.5rem .875rem;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:6px;width:fit-content}
-  .progress-bar-wrap{background:var(--bg3);border-radius:100px;height:6px;overflow:hidden;margin:.375rem 0}
-  .progress-bar-fill{height:100%;border-radius:100px;background:var(--blue);transition:width .8s ease}
-  .mgr-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;padding:1.5rem 2rem;border-bottom:1px solid var(--border)}
-  .mgr-stat{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem}
-  .mgr-stat-val{font-size:1.75rem;font-weight:700;font-family:var(--mono);margin-bottom:2px}
-  .mgr-stat-label{font-size:.65rem;font-family:var(--mono);color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
-  .mgr-body{padding:1.5rem 2rem;display:flex;flex-direction:column;gap:1rem}
+  .file-indicator{
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    font-size:.75rem;
+    color:var(--green);
+    font-family:var(--mono);
+    margin-top:.75rem;
+    padding:.5rem .875rem;
+    background:rgba(0,255,136,.05);
+    border:1px solid rgba(0,255,136,.15);
+    border-radius:6px;
+    width:fit-content;
+    box-shadow:0 0 10px rgba(0,255,136,.05);
+  }
+
+  /* ── Spinner ──────────────────────────────────────────────── */
+  .spinner{
+    width:16px;height:16px;
+    border:2px solid var(--border2);
+    border-top-color:var(--blue2);
+    border-right-color:var(--cyan);
+    border-radius:50%;
+    animation:spin .6s linear infinite;
+    display:inline-block;
+    box-shadow:0 0 8px rgba(29,108,240,.2);
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .empty-state{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:4rem 2rem;
+    color:var(--text3);
+    text-align:center;
+    gap:.875rem;
+  }
+  .empty-text{font-size:.875rem;line-height:1.6;max-width:320px;color:var(--text3)}
+
+  /* ── Progress bars ────────────────────────────────────────── */
+  .progress-bar-wrap{
+    background:var(--border);
+    border-radius:100px;
+    height:5px;
+    overflow:hidden;
+    margin:.375rem 0;
+  }
+  .progress-bar-fill{
+    height:100%;
+    border-radius:100px;
+    background:linear-gradient(90deg,var(--blue3),var(--blue2));
+    transition:width .8s cubic-bezier(.4,0,.2,1);
+    box-shadow:0 0 6px rgba(29,108,240,.3);
+  }
+
+  /* ── Manager ──────────────────────────────────────────────── */
+  .mgr-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:.875rem;
+    padding:1.75rem 2.5rem;
+    border-bottom:1px solid var(--border);
+  }
+  .mgr-stat{
+    background:var(--bg3);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:1.125rem;
+    transition:all .2s;
+    position:relative;
+    overflow:hidden;
+  }
+  .mgr-stat:hover{border-color:var(--border2);transform:translateY(-2px)}
+  .mgr-stat::before{
+    content:'';
+    position:absolute;
+    bottom:0;left:0;right:0;
+    height:1px;
+    background:linear-gradient(90deg,transparent,rgba(29,108,240,.3),transparent);
+    opacity:0;
+    transition:opacity .2s;
+  }
+  .mgr-stat:hover::before{opacity:1}
+  .mgr-stat-val{
+    font-size:1.75rem;
+    font-weight:700;
+    font-family:var(--mono);
+    margin-bottom:2px;
+    text-shadow:0 0 15px currentColor;
+  }
+  .mgr-stat-label{
+    font-size:.6rem;
+    font-family:var(--mono);
+    color:var(--text3);
+    letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+
+  .mgr-body{padding:1.75rem 2.5rem;display:flex;flex-direction:column;gap:1rem}
   .learner-table{width:100%;border-collapse:collapse}
-  .learner-table th{font-size:.62rem;font-family:var(--mono);color:var(--text3);letter-spacing:.08em;text-transform:uppercase;padding:.5rem .75rem;text-align:left;border-bottom:1px solid var(--border);font-weight:500}
-  .learner-table td{font-size:.75rem;padding:.625rem .75rem;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+  .learner-table th{
+    font-size:.6rem;
+    font-family:var(--mono);
+    color:var(--text3);
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    padding:.5rem .875rem;
+    text-align:left;
+    border-bottom:1px solid var(--border);
+    font-weight:500;
+  }
+  .learner-table td{
+    font-size:.75rem;
+    padding:.625rem .875rem;
+    border-bottom:1px solid var(--border);
+    color:var(--text2);
+    vertical-align:middle;
+    transition:background .15s;
+  }
   .learner-table tr:last-child td{border-bottom:none}
-  .learner-table tr:hover td{background:var(--bg3)}
-  .risk-badge{font-size:.6rem;font-family:var(--mono);padding:2px 8px;border-radius:4px;font-weight:500;white-space:nowrap}
-  .risk-low{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
-  .risk-medium{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
-  .risk-high{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
-  .risk-critical{background:rgba(239,68,68,.2);color:#ff6b6b;border:1px solid rgba(239,68,68,.4)}
+  .learner-table tr:hover td{background:rgba(29,108,240,.04)}
+
+  .risk-badge{font-size:.58rem;font-family:var(--mono);padding:2px 8px;border-radius:4px;font-weight:600;white-space:nowrap}
+  .risk-low{background:rgba(0,255,136,.06);color:var(--green);border:1px solid rgba(0,255,136,.15)}
+  .risk-medium{background:rgba(255,170,0,.08);color:var(--amber);border:1px solid rgba(255,170,0,.2)}
+  .risk-high{background:rgba(255,51,85,.08);color:var(--red);border:1px solid rgba(255,51,85,.2)}
+  .risk-critical{background:rgba(255,51,85,.15);color:#ff6b6b;border:1px solid rgba(255,51,85,.35)}
   .outcome-pass{color:var(--green);font-weight:600;font-family:var(--mono);font-size:.7rem}
   .outcome-fail{color:var(--red);font-weight:600;font-family:var(--mono);font-size:.7rem}
-  .mini-bar-wrap{width:80px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:.5rem}
-  .mini-bar-fill{height:100%;border-radius:2px;transition:width .8s ease}
-  .team-chip{font-size:.6rem;font-family:var(--mono);padding:2px 7px;border-radius:4px;background:rgba(59,130,246,.08);color:var(--text3);border:1px solid var(--border)}
-  .insight-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.125rem 1.25rem;display:flex;gap:1rem;align-items:flex-start}
-  .insight-icon{font-size:1.25rem;margin-top:1px;flex-shrink:0}
+  .mini-bar-wrap{width:80px;height:3px;background:var(--border);border-radius:2px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:.5rem}
+  .mini-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blue3),var(--blue2));transition:width .8s ease;box-shadow:0 0 4px rgba(29,108,240,.3)}
+  .team-chip{font-size:.58rem;font-family:var(--mono);padding:2px 7px;border-radius:4px;background:rgba(29,108,240,.06);color:var(--text3);border:1px solid var(--border)}
+  .insight-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1.125rem 1.25rem;display:flex;gap:1rem;align-items:flex-start;transition:all .2s}
+  .insight-card:hover{border-color:var(--border2)}
   .insight-title{font-size:.75rem;font-weight:600;color:var(--text);margin-bottom:.25rem}
   .insight-body{font-size:.72rem;color:var(--text2);line-height:1.6}
   .team-filter{display:flex;gap:.375rem;flex-wrap:wrap;margin-bottom:1rem}
-  .team-filter-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:.65rem;padding:4px 10px;border-radius:5px;cursor:pointer;transition:all .15s}
-  .team-filter-btn.active{background:var(--bg4);border-color:var(--blue);color:var(--blue2)}
+  .team-filter-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text3);font-family:var(--mono);font-size:.62rem;padding:4px 10px;border-radius:5px;cursor:pointer;transition:all .15s}
+  .team-filter-btn:hover{border-color:var(--border2);color:var(--text2)}
+  .team-filter-btn.active{background:rgba(29,108,240,.1);border-color:rgba(29,108,240,.3);color:var(--blue2)}
 
-  .paper-config{padding:2.5rem 2rem;display:flex;flex-direction:column;gap:1.5rem;max-width:560px}
-  .config-label{font-size:.65rem;font-family:var(--mono);color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.625rem}
+  /* ── Practice Paper ───────────────────────────────────────── */
+  .paper-config{padding:2.5rem 2.5rem;display:flex;flex-direction:column;gap:1.75rem;max-width:580px}
+  .config-label{font-size:.6rem;font-family:var(--mono);color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:.75rem}
   .config-row{display:flex;gap:.5rem;flex-wrap:wrap}
-  .config-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-family:var(--mono);font-size:.75rem;padding:7px 18px;border-radius:6px;cursor:pointer;transition:all .2s;font-weight:500}
-  .config-btn:hover{border-color:var(--border2);color:var(--text)}
-  .config-btn.active{background:var(--bg4);border-color:var(--blue);color:var(--blue2)}
-  .paper-wrap{padding:1.5rem 2rem;flex:1;display:flex;flex-direction:column;gap:1rem}
-  .paper-header{display:flex;justify-content:space-between;align-items:center;padding:.875rem 1.25rem;background:var(--bg2);border:1px solid var(--border);border-radius:10px}
-  .paper-meta{font-size:.7rem;font-family:var(--mono);color:var(--text3)}
-  .paper-timer{font-size:1.1rem;font-weight:700;font-family:var(--mono);color:var(--blue2)}
-  .paper-timer.warning{color:var(--amber)}
-  .paper-timer.danger{color:var(--red);animation:pulse 1s infinite}
+  .config-btn{
+    background:var(--bg3);
+    border:1px solid var(--border);
+    color:var(--text2);
+    font-family:var(--mono);
+    font-size:.72rem;
+    padding:8px 18px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:all .2s;
+    font-weight:500;
+    line-height:1.4;
+  }
+  .config-btn:hover{border-color:var(--border2);color:var(--text);background:var(--bg4)}
+  .config-btn.active{
+    background:rgba(29,108,240,.12);
+    border-color:rgba(29,108,240,.35);
+    color:var(--blue2);
+    box-shadow:0 0 15px rgba(29,108,240,.1);
+  }
+  .paper-wrap{padding:1.75rem 2.5rem;flex:1;display:flex;flex-direction:column;gap:1rem}
+  .paper-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:.875rem 1.25rem;
+    background:rgba(4,15,32,.6);
+    border:1px solid var(--border);
+    border-radius:10px;
+    backdrop-filter:blur(4px);
+  }
+  .paper-meta{font-size:.68rem;font-family:var(--mono);color:var(--text3)}
+  .paper-timer{font-size:1.15rem;font-weight:700;font-family:var(--mono);color:var(--blue2);text-shadow:0 0 15px rgba(77,159,255,.3)}
+  .paper-timer.warning{color:var(--amber);text-shadow:0 0 15px rgba(255,170,0,.3)}
+  .paper-timer.danger{color:var(--red);text-shadow:0 0 15px rgba(255,51,85,.4);animation:pulse 1s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-  .pq-block{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;transition:border .2s}
-  .pq-block.answered{border-color:rgba(59,130,246,.3)}
-  .pq-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem}
-  .pq-num{font-size:.65rem;font-family:var(--mono);color:var(--text3)}
-  .pq-difficulty{font-size:.6rem;font-family:var(--mono);padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.06em}
-  .pq-diff-recall{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
-  .pq-diff-comprehension{background:rgba(59,130,246,.1);color:var(--blue2);border:1px solid rgba(59,130,246,.2)}
-  .pq-diff-application{background:rgba(139,92,246,.1);color:var(--purple);border:1px solid rgba(139,92,246,.2)}
-  .pq-diff-analysis{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
-  .pq-diff-scenario{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
-  .pq-skill{font-size:.62rem;font-family:var(--mono);color:var(--text3);margin-bottom:.5rem}
-  .pq-text{font-size:.85rem;font-weight:500;color:var(--text);line-height:1.6;margin-bottom:1rem}
+  .pq-block{background:rgba(4,15,32,.6);border:1px solid var(--border);border-radius:12px;padding:1.375rem;transition:all .2s;animation:card-in .3s ease both}
+  .pq-block:hover{border-color:var(--border2)}
+  .pq-block.answered{border-color:rgba(29,108,240,.3);box-shadow:0 0 15px rgba(29,108,240,.04)}
+  .pq-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+  .pq-num{font-size:.62rem;font-family:var(--mono);color:var(--text3);letter-spacing:.08em}
+  .pq-difficulty{font-size:.58rem;font-family:var(--mono);padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+  .pq-diff-recall{background:rgba(0,255,136,.06);color:var(--green);border:1px solid rgba(0,255,136,.15)}
+  .pq-diff-comprehension{background:rgba(29,108,240,.08);color:var(--blue2);border:1px solid rgba(29,108,240,.2)}
+  .pq-diff-application{background:rgba(124,58,237,.08);color:#a78bfa;border:1px solid rgba(124,58,237,.2)}
+  .pq-diff-analysis{background:rgba(255,170,0,.08);color:var(--amber);border:1px solid rgba(255,170,0,.2)}
+  .pq-diff-scenario{background:rgba(255,51,85,.08);color:var(--red);border:1px solid rgba(255,51,85,.2)}
+  .pq-text{font-size:.85rem;font-weight:500;color:var(--text);line-height:1.6;margin-bottom:1.125rem}
   .pq-options{display:flex;flex-direction:column;gap:.5rem}
-  .pq-option{display:flex;gap:.875rem;align-items:flex-start;padding:.625rem .875rem;border-radius:7px;border:1px solid var(--border);cursor:pointer;transition:all .2s;background:var(--bg3)}
+  .pq-option{
+    display:flex;gap:.875rem;align-items:flex-start;
+    padding:.75rem 1rem;border-radius:8px;
+    border:1px solid var(--border);cursor:pointer;
+    transition:all .2s;background:rgba(4,15,32,.4);
+  }
   .pq-option:hover{border-color:var(--border2);background:var(--bg4)}
-  .pq-option.selected{border-color:var(--blue);background:rgba(59,130,246,.08)}
-  .pq-option.correct{border-color:var(--green);background:rgba(16,185,129,.08)}
-  .pq-option.wrong{border-color:var(--red);background:rgba(239,68,68,.08)}
-  .pq-option-key{font-family:var(--mono);font-size:.7rem;font-weight:600;color:var(--text3);min-width:18px;margin-top:1px}
+  .pq-option.selected{border-color:var(--blue);background:rgba(29,108,240,.08);box-shadow:0 0 12px rgba(29,108,240,.08)}
+  .pq-option.correct{border-color:var(--green);background:rgba(0,255,136,.05)}
+  .pq-option.wrong{border-color:var(--red);background:rgba(255,51,85,.05)}
+  .pq-option-key{font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--text3);min-width:18px;margin-top:1px}
   .pq-option-text{font-size:.78rem;color:var(--text2);line-height:1.5}
-  .pq-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:.78rem;border-radius:8px;padding:.875rem;resize:vertical;min-height:90px;outline:none;transition:border .2s;line-height:1.6}
-  .pq-textarea:focus{border-color:var(--blue)}
+  .pq-textarea{width:100%;background:rgba(4,15,32,.6);border:1px solid var(--border2);color:var(--text);font-family:var(--mono);font-size:.78rem;border-radius:8px;padding:.875rem;resize:vertical;min-height:90px;outline:none;transition:border .2s;line-height:1.6}
+  .pq-textarea:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(29,108,240,.08)}
   .pq-textarea::placeholder{color:var(--text3)}
-  .paper-result{padding:1.5rem 2rem;display:flex;flex-direction:column;gap:1rem}
-  .result-banner{padding:1.5rem;border-radius:12px;border:1px solid var(--border);background:linear-gradient(135deg,rgba(29,78,216,.15),rgba(139,92,246,.08));display:flex;gap:1.5rem;align-items:center}
-  .result-score-big{font-size:3rem;font-weight:700;font-family:var(--mono);color:var(--blue2);line-height:1}
-  .result-label{font-size:.75rem;font-weight:600;color:var(--text);margin-bottom:.25rem}
-  .result-verdict{font-size:.78rem;color:var(--text2);line-height:1.6}
-  .pr-q-block{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.125rem;margin-bottom:.75rem}
+  .paper-result{padding:1.75rem 2.5rem;display:flex;flex-direction:column;gap:1.125rem}
+  .result-banner{
+    padding:1.75rem;border-radius:14px;border:1px solid rgba(29,108,240,.2);
+    background:linear-gradient(135deg,rgba(29,108,240,.1),rgba(0,212,255,.04));
+    display:flex;gap:2rem;align-items:center;
+    position:relative;overflow:hidden;
+  }
+  .result-banner::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--blue2),var(--cyan),transparent);
+  }
+  .result-score-big{font-size:3.25rem;font-weight:700;font-family:var(--mono);color:var(--blue2);line-height:1;text-shadow:0 0 30px rgba(77,159,255,.3)}
+  .result-label{font-size:.75rem;font-weight:600;color:var(--text);margin-bottom:.375rem}
+  .result-verdict{font-size:.8rem;color:var(--text2);line-height:1.65}
+  .pr-q-block{background:rgba(4,15,32,.6);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:.875rem;transition:border .2s}
+  .pr-q-block:hover{border-color:var(--border2)}
   .pr-q-text{font-size:.82rem;font-weight:500;color:var(--text);margin-bottom:.875rem;line-height:1.5}
-  .pr-answer-row{display:flex;gap:.625rem;align-items:flex-start;padding:.5rem .75rem;border-radius:6px;font-size:.75rem;margin-bottom:.375rem}
-  .pr-answer-row.correct-row{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15)}
-  .pr-answer-row.wrong-row{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15)}
-  .pr-answer-row.ideal-row{background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15)}
-  .pr-explanation{font-size:.75rem;color:var(--text2);line-height:1.6;margin-top:.625rem;padding:.625rem .875rem;background:var(--bg3);border-radius:6px;border-left:2px solid var(--blue)}
-  .gap-link{display:inline-flex;align-items:center;gap:.375rem;font-size:.7rem;font-family:var(--mono);color:var(--blue2);padding:4px 10px;border-radius:5px;border:1px solid rgba(59,130,246,.25);background:rgba(59,130,246,.06);cursor:pointer;transition:all .2s;margin:.25rem}
-  .gap-link:hover{background:rgba(59,130,246,.12);border-color:var(--blue)}
-  .paper-progress{display:flex;gap:.375rem;flex-wrap:wrap;margin-bottom:.5rem}
-  .pp-dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);transition:all .3s;cursor:default}
-  .pp-dot.answered{background:var(--blue3);border-color:var(--blue)}
+  .pr-answer-row{display:flex;gap:.625rem;align-items:flex-start;padding:.5rem .875rem;border-radius:6px;font-size:.75rem;margin-bottom:.375rem}
+  .pr-answer-row.correct-row{background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.12)}
+  .pr-answer-row.wrong-row{background:rgba(255,51,85,.04);border:1px solid rgba(255,51,85,.12)}
+  .pr-answer-row.ideal-row{background:rgba(29,108,240,.04);border:1px solid rgba(29,108,240,.12)}
+  .pr-explanation{font-size:.75rem;color:var(--text2);line-height:1.65;margin-top:.625rem;padding:.75rem 1rem;background:rgba(4,15,32,.6);border-radius:6px;border-left:2px solid var(--blue)}
+  .gap-link{display:inline-flex;align-items:center;gap:.375rem;font-size:.68rem;font-family:var(--mono);color:var(--blue2);padding:4px 11px;border-radius:5px;border:1px solid rgba(29,108,240,.2);background:rgba(29,108,240,.05);cursor:pointer;transition:all .2s;margin:.25rem}
+  .gap-link:hover{background:rgba(29,108,240,.12);border-color:rgba(29,108,240,.4);box-shadow:0 0 10px rgba(29,108,240,.1)}
+  .paper-progress{display:flex;gap:.375rem;flex-wrap:wrap;margin-bottom:.625rem}
+  .pp-dot{width:9px;height:9px;border-radius:50%;border:1px solid var(--border2);background:var(--bg4);transition:all .3s}
+  .pp-dot.answered{background:var(--blue2);border-color:var(--blue);box-shadow:0 0 6px rgba(77,159,255,.4)}
+  @keyframes soundbar{from{transform:scaleY(.4)}to{transform:scaleY(1)}}
 `;
 
 function ScoreCard({ label, value, max = 10, accent }) {
@@ -282,60 +1169,213 @@ function StreamPanel({ events }) {
 
 function StudyPlanView({ data }) {
   if (!data) return <div className="prose">No study plan generated.</div>;
-  const raw = typeof data === "string" ? data : JSON.stringify(data, null, 2);
-  const days = raw.match(/day\s*\d+[^\n]*/gi) || [];
-  const lines = raw.split("\n").filter(l => l.trim());
-  return (
-    <div>
-      {lines.map((line, i) => {
-        const isDay = /day\s*\d+/i.test(line);
-        if (isDay) return (
+
+  // Unwrap string JSON
+  let parsed = data;
+  if (typeof data === "string") {
+    try { parsed = JSON.parse(data); } catch { parsed = null; }
+  }
+
+  // Sometimes wrapped in { study_plan: ... } or { result: ... }
+  if (parsed?.study_plan) parsed = parsed.study_plan;
+  if (parsed?.result) parsed = parsed.result;
+
+  // Structured path: has daily_plan array
+  if (parsed?.daily_plan && Array.isArray(parsed.daily_plan)) {
+    return (
+      <div>
+        {parsed.theme && <div className="prose" style={{ marginBottom: ".75rem", color: "var(--text2)", fontStyle: "italic" }}>{parsed.theme} — {parsed.milestone}</div>}
+        {parsed.daily_plan.map((day, i) => (
           <div className="plan-day" key={i}>
-            <span className="plan-day-num">{line.match(/day\s*\d+/i)?.[0]?.toUpperCase()}</span>
-            <span className="plan-day-content">{line.replace(/day\s*\d+[:\-\s]*/i, "")}</span>
+            <span className="plan-day-num">DAY {day.day || i + 1}</span>
+            <div className="plan-day-content">
+              {day.theme && <div style={{ fontWeight: 600, color: "var(--text)", marginBottom: ".5rem" }}>{day.theme}</div>}
+              {Array.isArray(day.exercises) && day.exercises.map((ex, j) => (
+                <div key={j} style={{ marginBottom: ".625rem", paddingLeft: ".75rem", borderLeft: "2px solid var(--border2)" }}>
+                  <div style={{ fontWeight: 500, color: "var(--text2)", fontSize: ".75rem" }}>{ex.name} {ex.duration && <span style={{ color: "var(--text3)", fontFamily: "var(--mono)", fontSize: ".65rem" }}>· {ex.duration}</span>}</div>
+                  {ex.description && <div style={{ fontSize: ".72rem", color: "var(--text2)", marginTop: ".2rem", lineHeight: 1.6 }}>{ex.description}</div>}
+                  {ex.goal && <div style={{ fontSize: ".65rem", color: "var(--blue2)", marginTop: ".15rem" }}>Goal: {ex.goal}</div>}
+                </div>
+              ))}
+              {day.checkpoint && <div style={{ fontSize: ".68rem", color: "var(--amber)", fontFamily: "var(--mono)", marginTop: ".375rem" }}>Checkpoint: {day.checkpoint}</div>}
+              {day.total_time && <div style={{ fontSize: ".65rem", color: "var(--text3)", marginTop: ".25rem" }}>Total: {day.total_time} min</div>}
+            </div>
           </div>
-        );
-        return <div key={i} className="prose" style={{ marginBottom: ".375rem" }}>{line.replace(/^[\-\*]\s*/, "")}</div>;
-      })}
-    </div>
-  );
+        ))}
+      </div>
+    );
+  }
+
+  // Fallback: personalized_message + daily_tips object
+  if (parsed?.personalized_message || parsed?.daily_tips) {
+    const tips = parsed.daily_tips || {};
+    return (
+      <div>
+        {parsed.personalized_message && <div className="prose" style={{ marginBottom: "1rem" }}>{parsed.personalized_message}</div>}
+        {Object.entries(tips).map(([day, tip], i) => (
+          <div className="plan-day" key={i}>
+            <span className="plan-day-num">{day.toUpperCase()}</span>
+            <span className="plan-day-content">{typeof tip === "string" ? tip : JSON.stringify(tip)}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Last resort: pretty print
+  const raw = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+  return <pre className="prose" style={{ whiteSpace: "pre-wrap", fontSize: ".72rem", lineHeight: 1.6 }}>{raw.slice(0, 2000)}</pre>;
 }
+
 
 function AssessmentView({ data }) {
   if (!data) return <div className="prose">No assessment generated.</div>;
-  const raw = typeof data === "string" ? data : (data.questions ? JSON.stringify(data.questions) : JSON.stringify(data));
-  const qs = raw.split(/Q\d+[:\.]|Question\s*\d+[:.]/i).filter(Boolean).slice(0, 8);
-  if (!qs.length) return <pre className="prose" style={{ whiteSpace: "pre-wrap", fontSize: ".75rem" }}>{raw.slice(0, 1200)}</pre>;
-  return (
-    <div>
-      {qs.map((q, i) => (
-        <div className="q-block" key={i}>
-          <div className="q-number">Q{i + 1}</div>
-          <div className="q-text">{q.split("\n")[0].slice(0, 200)}</div>
-          {q.split("\n").slice(1).filter(l => /^[A-D][.)]\s/.test(l.trim())).map((opt, j) => (
-            <div className="q-option" key={j}><span>{opt.trim()[0]}</span><span>{opt.trim().slice(2).trim()}</span></div>
-          ))}
-          <div className="citation-row"><span className="citation-dot" /><span>Grounded via Microsoft Foundry IQ</span></div>
-        </div>
-      ))}
-    </div>
-  );
+
+  // Unwrap string JSON
+  let parsed = data;
+  if (typeof data === "string") {
+    try { parsed = JSON.parse(data); } catch { parsed = null; }
+  }
+
+  // Unwrap nested shapes
+  if (parsed?.assessment) parsed = parsed.assessment;
+
+  // Resolve questions array from various shapes
+  let questions = null;
+  if (Array.isArray(parsed)) {
+    questions = parsed;
+  } else if (parsed?.questions && Array.isArray(parsed.questions)) {
+    questions = parsed.questions;
+  } else if (parsed?.practice_questions && Array.isArray(parsed.practice_questions)) {
+    questions = parsed.practice_questions;
+  }
+
+  // Each question might itself be a JSON string — parse them
+  if (questions) {
+    questions = questions.map(q => {
+      if (typeof q === "string") { try { return JSON.parse(q); } catch { return { question: q }; } }
+      return q;
+    });
+  }
+
+  if (questions && questions.length > 0) {
+    return (
+      <div>
+        {questions.slice(0, 8).map((q, i) => (
+          <div className="q-block" key={i}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: ".5rem" }}>
+              <div className="q-number">Q{i + 1}</div>
+              <div style={{ display: "flex", gap: ".5rem" }}>
+                {q.difficulty && <span style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".06em" }}>{q.difficulty}</span>}
+                {q.skill_area && <span style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--blue2)" }}>{q.skill_area}</span>}
+              </div>
+            </div>
+            <div className="q-text">{q.question || String(q)}</div>
+            {q.ideal_answer_points && Array.isArray(q.ideal_answer_points) && q.ideal_answer_points.length > 0 && (
+              <div style={{ marginTop: ".625rem" }}>
+                <div style={{ fontSize: ".62rem", fontFamily: "var(--mono)", color: "var(--text3)", marginBottom: ".375rem", textTransform: "uppercase", letterSpacing: ".06em" }}>Key Points</div>
+                {q.ideal_answer_points.map((pt, j) => (
+                  <div key={j} style={{ fontSize: ".72rem", color: "var(--text2)", padding: ".2rem 0 .2rem .75rem", borderLeft: "2px solid var(--border2)", marginBottom: ".25rem" }}>{pt}</div>
+                ))}
+              </div>
+            )}
+            {q.options && Array.isArray(q.options) && q.options.map((opt, j) => (
+              <div className="q-option" key={j}>
+                <span className="pq-option-key">{String.fromCharCode(65 + j)}</span>
+                <span>{opt}</span>
+              </div>
+            ))}
+            <div className="citation-row"><span className="citation-dot" /><span>Grounded via Microsoft Foundry IQ</span></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // No questions found — show what we have
+  const raw = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+  return <pre className="prose" style={{ whiteSpace: "pre-wrap", fontSize: ".72rem", lineHeight: 1.6 }}>{raw.slice(0, 1500)}</pre>;
 }
+
 
 function InsightsView({ data }) {
   if (!data) return <div className="prose">No insights generated.</div>;
-  const raw = typeof data === "string" ? data : JSON.stringify(data, null, 2);
-  const lines = raw.split("\n").filter(l => l.trim()).slice(0, 20);
-  return (
-    <div>
-      {lines.map((line, i) => (
-        <div key={i} style={{ marginBottom: ".5rem" }}>
-          <span className="prose">{line.replace(/^[\-\*#]+\s*/, "")}</span>
+
+  let parsed = data;
+  if (typeof data === "string") {
+    try { parsed = JSON.parse(data); } catch { parsed = null; }
+  }
+  if (parsed?.insights) parsed = parsed.insights;
+
+  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+    const trend = parsed.trend || parsed.trend_direction || parsed.trend?.label;
+    const report = parsed.report;
+    const milestones = parsed.milestones || [];
+    const baseline = parsed.baseline_score ?? parsed.current_score;
+    const sessions = parsed.session_count;
+    const chartData = parsed.chart_data || [];
+    const trendPct = parsed.trend_percentage || parsed.trend?.percentage;
+    const trendDir = parsed.trend_direction || parsed.trend?.direction || "neutral";
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: ".875rem" }}>
+        {report && (
+          <div style={{ fontSize: ".82rem", color: "var(--text2)", lineHeight: 1.7, padding: "1rem", background: "var(--bg3)", borderRadius: "8px", border: "1px solid var(--border)" }}>
+            {report}
+          </div>
+        )}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: ".75rem" }}>
+          {baseline !== undefined && (
+            <div style={{ background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: "8px", padding: ".875rem" }}>
+              <div style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".375rem" }}>Score</div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 700, fontFamily: "var(--mono)", color: "var(--blue2)" }}>{typeof baseline === "number" ? baseline.toFixed(1) : baseline}/10</div>
+            </div>
+          )}
+          {sessions !== undefined && (
+            <div style={{ background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: "8px", padding: ".875rem" }}>
+              <div style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".375rem" }}>Sessions</div>
+              <div style={{ fontSize: "1.5rem", fontWeight: 700, fontFamily: "var(--mono)", color: "var(--cyan)" }}>{sessions}</div>
+            </div>
+          )}
+          {trend && (
+            <div style={{ background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: "8px", padding: ".875rem" }}>
+              <div style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".375rem" }}>Trend</div>
+              <div style={{ fontSize: ".95rem", fontWeight: 700, fontFamily: "var(--mono)", color: trendDir === "up" ? "var(--green)" : trendDir === "down" ? "var(--red)" : "var(--amber)", textTransform: "capitalize" }}>
+                {typeof trend === "string" ? trend : trend} {trendPct ? `+${trendPct}%` : ""}
+              </div>
+            </div>
+          )}
         </div>
-      ))}
-    </div>
-  );
+        {milestones.length > 0 && (
+          <div>
+            <div style={{ fontSize: ".62rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".5rem" }}>Milestones</div>
+            <div className="tag-row">{milestones.map((m, i) => <span key={i} className="tag green">{m}</span>)}</div>
+          </div>
+        )}
+        {chartData.length > 0 && (
+          <div>
+            <div style={{ fontSize: ".62rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".5rem" }}>Score History</div>
+            <div style={{ display: "flex", gap: ".5rem", alignItems: "flex-end", height: "60px" }}>
+              {chartData.map((pt, i) => {
+                const h = Math.max(8, ((pt.score || 5) / 10) * 60);
+                return (
+                  <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: ".25rem", flex: 1 }}>
+                    <div style={{ width: "100%", height: `${h}px`, background: "var(--blue3)", borderRadius: "3px 3px 0 0", border: "1px solid var(--border2)" }} />
+                    <div style={{ fontSize: ".55rem", fontFamily: "var(--mono)", color: "var(--text3)" }}>S{pt.session}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const raw = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+  return <pre className="prose" style={{ whiteSpace: "pre-wrap", fontSize: ".72rem", lineHeight: 1.6 }}>{raw.slice(0, 1500)}</pre>;
 }
+
 
 function ResultView({ result, cert }) {
   const [tab, setTab] = useState("overview");
@@ -410,6 +1450,72 @@ function InterviewMode({ cert }) {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [streamEvents, setStreamEvents] = useState([]);
+  const [listening, setListening] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const recognitionRef = useRef(null);
+
+  // ── TTS: speak the question aloud ─────────────────────────────────────────
+  function speakQuestion(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.rate = 0.92;
+    utt.pitch = 1;
+    utt.volume = 1;
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.lang === "en-US" && v.name.toLowerCase().includes("google"))
+      || voices.find(v => v.lang === "en-US")
+      || voices[0];
+    if (preferred) utt.voice = preferred;
+    utt.onstart = () => setSpeaking(true);
+    utt.onend = () => setSpeaking(false);
+    utt.onerror = () => setSpeaking(false);
+    window.speechSynthesis.speak(utt);
+  }
+
+  // ── STT: start listening ───────────────────────────────────────────────────
+  function startListening() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { alert("Speech recognition not supported in this browser. Use Chrome."); return; }
+    const rec = new SR();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = "en-US";
+    rec.onstart = () => setListening(true);
+    rec.onresult = (e) => {
+      let final = "";
+      let interim = "";
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) final += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      setTranscript(prev => prev + final);
+      setAnswer(prev => (prev + final) || interim);
+    };
+    rec.onerror = () => setListening(false);
+    rec.onend = () => setListening(false);
+    recognitionRef.current = rec;
+    rec.start();
+  }
+
+  function stopListening() {
+    recognitionRef.current?.stop();
+    setListening(false);
+  }
+
+  function toggleListening() {
+    if (listening) stopListening();
+    else startListening();
+  }
+
+  // Speak question whenever it changes and we're in questioning stage
+  useEffect(() => {
+    if (question && stage === "questioning") {
+      // small delay so UI renders first
+      setTimeout(() => speakQuestion(question), 400);
+    }
+  }, [question, stage]);
 
   async function startInterview() {
     setLoading(true);
@@ -517,22 +1623,85 @@ function InterviewMode({ cert }) {
       {(stage === "questioning" || stage === "assessing") && (
         <div>
           <div className="interview-round">Round {round} of {maxRounds} · {cert}</div>
-          <div className="interview-q">{question}</div>
-          <textarea
-            value={answer}
-            onChange={e => setAnswer(e.target.value)}
-            placeholder="Type your verbal explanation here…"
-            rows={5}
-            disabled={loading || stage === "assessing"}
-          />
-          <div className="run-row">
-            <button className="run-btn" onClick={submitAnswer} disabled={loading || !answer.trim() || stage === "assessing"}>
-              {loading ? <><span className="spinner" /> Processing...</> : round >= maxRounds ? "Submit & Assess" : "→ Next Question"}
-            </button>
-            {round >= maxRounds - 1 && stage !== "assessing" && (
-              <span className="run-hint">This is your final round</span>
+
+          {/* Question with TTS waveform */}
+          <div className="interview-q" style={{ position: "relative" }}>
+            {speaking && (
+              <div style={{ position: "absolute", top: ".75rem", right: ".875rem", display: "flex", gap: "3px", alignItems: "flex-end", height: "16px" }}>
+                {[6,12,9,14].map((h,i) => (
+                  <div key={i} style={{ width: "3px", borderRadius: "2px", background: "var(--blue2)", height: `${h}px`, animation: `soundbar .6s ${i*0.1}s ease-in-out infinite alternate` }} />
+                ))}
+              </div>
             )}
-            {stage === "assessing" && <span className="run-hint">Running multi-agent analysis…</span>}
+            {question}
+          </div>
+
+          {/* Voice answer area */}
+          <div style={{
+            background: "rgba(4,15,32,.6)",
+            border: `1.5px solid ${listening ? "var(--green)" : "var(--border2)"}`,
+            borderRadius: "12px", padding: "1.25rem",
+            minHeight: "110px", marginTop: ".875rem",
+            transition: "border .2s, box-shadow .2s",
+            boxShadow: listening ? "0 0 0 3px rgba(0,255,136,.08)" : "none",
+            position: "relative",
+          }}>
+            {answer ? (
+              <div style={{ fontSize: ".82rem", color: "var(--text)", lineHeight: 1.7 }}>{answer}</div>
+            ) : (
+              <div style={{ fontSize: ".78rem", color: "var(--text3)", fontStyle: "italic" }}>
+                {listening ? "Listening — speak your answer..." : "Press the mic button to start speaking"}
+              </div>
+            )}
+            {listening && (
+              <div style={{ position: "absolute", bottom: ".875rem", right: ".875rem", display: "flex", gap: "3px", alignItems: "flex-end", height: "14px" }}>
+                {[5,10,7,13,6].map((h,i) => (
+                  <div key={i} style={{ width: "3px", borderRadius: "2px", background: "var(--green)", height: `${h}px`, animation: `soundbar .5s ${i*0.08}s ease-in-out infinite alternate` }} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="run-row" style={{ marginTop: ".875rem" }}>
+            {/* Mic toggle */}
+            <button onClick={toggleListening} disabled={loading || stage === "assessing" || speaking} style={{
+              width: "48px", height: "48px", borderRadius: "50%", flexShrink: 0,
+              border: `1.5px solid ${listening ? "var(--green)" : "var(--border2)"}`,
+              background: listening ? "rgba(0,255,136,.1)" : "var(--bg3)",
+              color: listening ? "var(--green)" : "var(--text2)",
+              fontSize: "1.1rem", cursor: "pointer", transition: "all .2s",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              boxShadow: listening ? "0 0 15px rgba(0,255,136,.2)" : "none",
+            }} title={listening ? "Stop" : "Record"}>
+              {listening ? "■" : "🎙"}
+            </button>
+
+            {/* Replay */}
+            <button onClick={() => speakQuestion(question)} disabled={speaking || loading} style={{
+              padding: "7px 14px", borderRadius: "8px", border: "1px solid var(--border2)",
+              background: "var(--bg3)", color: "var(--text3)", fontFamily: "var(--font)",
+              fontSize: ".7rem", cursor: "pointer", transition: "all .2s",
+            }}>
+              {speaking ? "Speaking..." : "Replay"}
+            </button>
+
+            {/* Clear */}
+            {answer && !listening && (
+              <button onClick={() => setAnswer("")} style={{
+                padding: "7px 14px", borderRadius: "8px", border: "1px solid var(--border)",
+                background: "none", color: "var(--text3)", fontFamily: "var(--font)",
+                fontSize: ".7rem", cursor: "pointer",
+              }}>Clear</button>
+            )}
+
+            {/* Submit */}
+            <button className="run-btn" onClick={() => { stopListening(); submitAnswer(); }}
+              disabled={loading || !answer.trim() || stage === "assessing"}
+              style={{ marginLeft: "auto" }}>
+              {loading ? <><span className="spinner" /> Processing...</> : round >= maxRounds ? "Submit & Assess" : "Submit Answer"}
+            </button>
+
+            {stage === "assessing" && <span className="run-hint">Running multi-agent analysis...</span>}
           </div>
           {history.length > 0 && (
             <div style={{ marginTop: "1.25rem" }}>
@@ -1108,7 +2277,15 @@ export default function App() {
 
         <div className="main">
           <aside className="sidebar">
-            <div className="sidebar-section">Certification Track</div>
+            <div style={{
+                  fontSize: ".55rem", fontFamily: "var(--mono)", color: "var(--text3)",
+                  letterSpacing: ".18em", textTransform: "uppercase", padding: ".25rem",
+                  display: "flex", alignItems: "center", gap: ".5rem",
+                }}>
+                  <div style={{ flex: 1, height: "1px", background: "linear-gradient(90deg,var(--border),transparent)" }} />
+                  Certification Track
+                  <div style={{ flex: 1, height: "1px", background: "linear-gradient(270deg,var(--border),transparent)" }} />
+                </div>
             {CERTS.map(c => (
               <div
                 key={c.id}
@@ -1126,17 +2303,26 @@ export default function App() {
 
             <div style={{ marginTop: "auto", paddingTop: "1rem", borderTop: "1px solid var(--border)" }}>
               <div className="sidebar-section">Multi-Agent Pipeline</div>
-              {AGENTS.map(a => (
-                <div key={a.key} style={{ display: "flex", gap: ".625rem", alignItems: "flex-start", padding: ".375rem 0" }}>
-                  <span style={{ fontSize: ".875rem" }}>{a.icon}</span>
-                  <div>
-                    <div style={{ fontSize: ".7rem", fontWeight: 600, color: "var(--text2)" }}>{a.label}</div>
-                    <div style={{ fontSize: ".6rem", color: "var(--text3)", lineHeight: 1.5 }}>{a.desc}</div>
+              {/* Agent badges — horizontal wrapping row */}
+              <div style={{ display:"flex", flexWrap:"wrap", gap:".3rem", marginTop:".25rem" }}>
+                {AGENTS.map((a, i) => (
+                  <div key={a.key} style={{
+                    display:"flex", alignItems:"center", gap:".3rem",
+                    padding:"3px 9px", borderRadius:"12px",
+                    background:"rgba(29,108,240,.07)",
+                    border:"1px solid rgba(29,108,240,.18)",
+                    cursor:"default", transition:"all .2s",
+                  }}
+                  onMouseEnter={e=>{e.currentTarget.style.background="rgba(29,108,240,.15)";e.currentTarget.style.borderColor="rgba(29,108,240,.4)";}}
+                  onMouseLeave={e=>{e.currentTarget.style.background="rgba(29,108,240,.07)";e.currentTarget.style.borderColor="rgba(29,108,240,.18)";}}
+                  >
+                    <div style={{width:"4px",height:"4px",borderRadius:"50%",background:"var(--blue2)",boxShadow:"0 0 4px var(--blue2)",flexShrink:0}}/>
+                    <span style={{fontSize:".58rem",fontFamily:"var(--mono)",color:"var(--blue2)",fontWeight:500,whiteSpace:"nowrap"}}>{a.label}</span>
                   </div>
-                </div>
-              ))}
-              <div style={{ marginTop: ".875rem", fontSize: ".6rem", color: "var(--text3)", fontFamily: "var(--mono)", padding: ".5rem .625rem", background: "var(--bg3)", borderRadius: "6px", border: "1px solid var(--border)", lineHeight: 1.7 }}>
-                Grounded via<br />Microsoft Foundry IQ
+                ))}
+              </div>
+              <div className="grounded-badge">
+                Grounded via Microsoft Foundry IQ
               </div>
             </div>
           </aside>
@@ -1150,11 +2336,21 @@ export default function App() {
                   <div className="hero-sub">Submit a verbal explanation or typed answer. Our agent team analyzes technical depth, generates study plans, and delivers exam-grounded assessments.</div>
                 </div>
 
-                <div className="agents-row">
-                  {AGENTS.map(a => (
-                    <div className="agent-chip" key={a.key}>
-                      <div className="agent-label">{a.label}</div>
-                      <div className="agent-desc">{a.desc}</div>
+                <div style={{ display:"flex", gap:".5rem", flexWrap:"wrap", padding:"1rem 2.5rem", borderBottom:"1px solid var(--border)" }}>
+                  {AGENTS.map((a,i) => (
+                    <div key={a.key} style={{
+                      display:"flex", alignItems:"center", gap:".5rem",
+                      padding:"5px 14px", borderRadius:"20px",
+                      background:"rgba(29,108,240,.07)",
+                      border:"1px solid rgba(29,108,240,.18)",
+                      transition:"all .2s",
+                    }}
+                    onMouseEnter={e=>{e.currentTarget.style.background="rgba(29,108,240,.15)";e.currentTarget.style.borderColor="rgba(29,108,240,.4)";}}
+                    onMouseLeave={e=>{e.currentTarget.style.background="rgba(29,108,240,.07)";e.currentTarget.style.borderColor="rgba(29,108,240,.18)";}}
+                    >
+                      <div style={{width:"5px",height:"5px",borderRadius:"50%",background:"var(--blue2)",boxShadow:"0 0 5px var(--blue2)",flexShrink:0}}/>
+                      <span style={{fontSize:".68rem",fontFamily:"var(--mono)",color:"var(--blue2)",fontWeight:500,whiteSpace:"nowrap"}}>{a.label}</span>
+                      <span style={{fontSize:".6rem",color:"var(--text3)",whiteSpace:"nowrap"}}>{a.desc}</span>
                     </div>
                   ))}
                 </div>
