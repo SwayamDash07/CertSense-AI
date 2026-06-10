@@ -91,7 +91,7 @@ const css = `
 
   /* ── Nav ──────────────────────────────────────────────────── */
   .nav{
-    background:rgba(2,11,24,.85);
+    background:rgba(1, 3, 66, 0.85);
     backdrop-filter:blur(20px);
     border-bottom:1px solid var(--border);
     display:flex;
@@ -2187,6 +2187,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [streamEvents, setStreamEvents] = useState([]);
+  const [sessions, setSessions] = useState([]);
   const fileRef = useRef(null);
   const wsRef = useRef(null);
   const sessionId = useRef(Math.random().toString(36).slice(2));
@@ -2248,6 +2249,21 @@ export default function App() {
         res = d.result;
       }
       setResult(res);
+      // save session to progress history
+      if (res) {
+        setSessions(prev => [...prev, {
+          id: sessionId.current,
+          cert,
+          score: res.overall_score ?? 0,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          date: new Date().toLocaleDateString([], { month: "short", day: "numeric" }),
+          mode: mode === "text" ? "Text Analysis" : "Audio Analysis",
+          strengths: res.communication_analysis?.strengths?.slice(0, 2) || [],
+          gaps: res.communication_analysis?.gaps?.slice(0, 2) || [],
+          recommendation: res.final_recommendation?.slice(0, 120) || "",
+        }]);
+        sessionId.current = Math.random().toString(36).slice(2); // fresh id for next session
+      }
       setStreamEvents(e => [...e, { agent: "orchestrator", status: "completed", message: "All agents completed — final report ready", data: {} }]);
     } catch (err) {
       setStreamEvents(e => [...e, { agent: "orchestrator", status: "error", message: err.message, data: {} }]);
@@ -2437,29 +2453,101 @@ export default function App() {
                 <div className="hero">
                   <div className="hero-eyebrow">Progress Tracking</div>
                   <div className="hero-title">Your <em>readiness</em> over time</div>
-                  <div className="hero-sub">Track score trends across certification tracks and sessions.</div>
+                  <div className="hero-sub">Every analysis and interview session is tracked here. Scores update in real time as you complete sessions.</div>
                 </div>
                 <div className="input-zone">
-                  <div className="block">
-                    <div className="block-title">Certification Progress</div>
-                    {CERTS.map(c => (
-                      <div key={c.id} style={{ marginBottom: "1rem" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: ".75rem", marginBottom: ".375rem" }}>
-                          <span style={{ fontWeight: 600, color: c.id === cert ? c.color : "var(--text2)" }}>{c.id} · {c.name}</span>
-                          <span style={{ fontFamily: "var(--mono)", fontSize: ".7rem", color: "var(--text3)" }}>
-                            {c.id === cert ? "Active track" : "Not started"}
-                          </span>
+
+                  {/* Summary cards */}
+                  <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:".75rem", marginBottom:"1.25rem" }}>
+                    {CERTS.map(c => {
+                      const certSessions = sessions.filter(s => s.cert === c.id);
+                      const latest = certSessions[certSessions.length - 1];
+                      const best = certSessions.length ? Math.max(...certSessions.map(s => s.score)) : null;
+                      const avg = certSessions.length ? (certSessions.reduce((a,s) => a + s.score, 0) / certSessions.length).toFixed(1) : null;
+                      return (
+                        <div key={c.id} className="block" style={{ borderColor: certSessions.length ? c.color + "44" : "var(--border)", marginBottom:0 }}>
+                          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:".625rem" }}>
+                            <span style={{ fontSize:".7rem", fontWeight:700, color: certSessions.length ? c.color : "var(--text3)", fontFamily:"var(--mono)" }}>{c.id}</span>
+                            <span style={{ fontSize:".6rem", color:"var(--text3)", fontFamily:"var(--mono)" }}>{certSessions.length} session{certSessions.length !== 1 ? "s" : ""}</span>
+                          </div>
+                          {certSessions.length === 0 ? (
+                            <div style={{ fontSize:".7rem", color:"var(--text3)" }}>No sessions yet</div>
+                          ) : (
+                            <>
+                              <div style={{ fontSize:"1.75rem", fontWeight:700, fontFamily:"var(--mono)", color: latest.score >= 7.5 ? "var(--green)" : latest.score >= 6 ? "var(--amber)" : "var(--red)" }}>
+                                {latest.score.toFixed(1)}
+                                <span style={{ fontSize:".65rem", color:"var(--text3)", marginLeft:".25rem" }}>/10 latest</span>
+                              </div>
+                              <div style={{ display:"flex", gap:"1rem", marginTop:".375rem" }}>
+                                <span style={{ fontSize:".65rem", color:"var(--text3)", fontFamily:"var(--mono)" }}>best <span style={{ color:"var(--blue2)" }}>{best.toFixed(1)}</span></span>
+                                <span style={{ fontSize:".65rem", color:"var(--text3)", fontFamily:"var(--mono)" }}>avg <span style={{ color:"var(--text2)" }}>{avg}</span></span>
+                              </div>
+                              <div className="progress-bar-wrap" style={{ marginTop:".5rem" }}>
+                                <div className="progress-bar-fill" style={{ width:`${(latest.score/10)*100}%`, background: c.color }} />
+                              </div>
+                            </>
+                          )}
                         </div>
-                        <div className="progress-bar-wrap">
-                          <div className="progress-bar-fill" style={{ width: c.id === cert ? "0%" : "0%", background: c.color }} />
-                        </div>
-                      </div>
-                    ))}
-                    <div style={{ marginTop: "1rem", fontSize: ".75rem", color: "var(--text3)", lineHeight: 1.7, fontFamily: "var(--mono)" }}>
-                      Complete an analysis or interview session to begin tracking progress.<br />
-                      Connect a user_id via the API to persist across sessions.
-                    </div>
+                      );
+                    })}
                   </div>
+
+                  {/* Session history */}
+                  <div className="block">
+                    <div className="block-title" style={{ marginBottom:".875rem" }}>Session History</div>
+                    {sessions.length === 0 ? (
+                      <div style={{ textAlign:"center", padding:"2rem 0", color:"var(--text3)", fontSize:".8rem" }}>
+                        No sessions yet — run an analysis or complete an interview to start tracking.
+                      </div>
+                    ) : (
+                      [...sessions].reverse().map((s, i) => {
+                        const certColor = CERTS.find(c => c.id === s.cert)?.color || "var(--blue)";
+                        const scoreColor = s.score >= 7.5 ? "var(--green)" : s.score >= 6 ? "var(--amber)" : "var(--red)";
+                        return (
+                          <div key={s.id} style={{
+                            background:"var(--bg3)", border:"1px solid var(--border)",
+                            borderRadius:"8px", padding:".875rem 1rem", marginBottom:".625rem",
+                            display:"flex", gap:"1rem", alignItems:"flex-start",
+                            borderLeft:`3px solid ${certColor}`,
+                          }}>
+                            <div style={{ minWidth:"48px", textAlign:"center" }}>
+                              <div style={{ fontSize:"1.4rem", fontWeight:700, fontFamily:"var(--mono)", color: scoreColor, lineHeight:1 }}>{s.score.toFixed(1)}</div>
+                              <div style={{ fontSize:".55rem", color:"var(--text3)", fontFamily:"var(--mono)" }}>/10</div>
+                            </div>
+                            <div style={{ flex:1 }}>
+                              <div style={{ display:"flex", alignItems:"center", gap:".5rem", marginBottom:".375rem", flexWrap:"wrap" }}>
+                                <span style={{ fontSize:".7rem", fontWeight:700, color: certColor, fontFamily:"var(--mono)" }}>{s.cert}</span>
+                                <span style={{ fontSize:".6rem", color:"var(--text3)", fontFamily:"var(--mono)" }}>{s.mode}</span>
+                                <span style={{ fontSize:".6rem", color:"var(--text3)", marginLeft:"auto", fontFamily:"var(--mono)" }}>{s.date} · {s.timestamp}</span>
+                              </div>
+                              {s.recommendation && (
+                                <div style={{ fontSize:".72rem", color:"var(--text2)", lineHeight:1.5, marginBottom:".375rem" }}>{s.recommendation}{s.recommendation.length === 120 ? "…" : ""}</div>
+                              )}
+                              <div style={{ display:"flex", gap:".375rem", flexWrap:"wrap" }}>
+                                {s.strengths.map((t,j) => <span key={j} className="tag green" style={{ fontSize:".58rem" }}>{t}</span>)}
+                                {s.gaps.map((t,j) => <span key={j} className="tag red" style={{ fontSize:".58rem" }}>{t}</span>)}
+                              </div>
+                            </div>
+                            <div style={{ fontSize:".6rem", fontFamily:"var(--mono)", padding:"3px 8px", borderRadius:"4px",
+                              background: s.score >= 7.5 ? "rgba(0,255,136,.1)" : s.score >= 6 ? "rgba(255,170,0,.1)" : "rgba(255,51,85,.1)",
+                              color: scoreColor, border:`1px solid ${scoreColor}44`, whiteSpace:"nowrap" }}>
+                              {s.score >= 7.5 ? "Exam Ready" : s.score >= 6 ? "Developing" : "Needs Work"}
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  {sessions.length > 0 && (
+                    <div style={{ textAlign:"right" }}>
+                      <button onClick={() => setSessions([])} style={{
+                        background:"none", border:"1px solid var(--border)", color:"var(--text3)",
+                        fontFamily:"var(--mono)", fontSize:".65rem", padding:"4px 10px",
+                        borderRadius:"5px", cursor:"pointer"
+                      }}>Clear history</button>
+                    </div>
+                  )}
                 </div>
               </>
             )}
