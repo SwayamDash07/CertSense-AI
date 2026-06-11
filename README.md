@@ -50,40 +50,7 @@ Team-level certification readiness across all learners, with workload risk signa
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Frontend (React + Vite)                     │
-│   Analyze │ Practice Paper │ Interview │ Manager │ Progress      │
-│                  WebSocket live agent stream                      │
-└───────────────────────┬─────────────────────────────────────────┘
-                        │ REST + WebSocket
-┌───────────────────────▼─────────────────────────────────────────┐
-│                   FastAPI Backend (Python)                        │
-│                                                                   │
-│  ┌─────────────────────────────────────────────────────────────┐ │
-│  │                     Orchestrator Agent                       │ │
-│  │       Routes · Aggregates · Streams · Logs to Foundry       │ │
-│  └──┬──────────────┬──────────────┬───────────────┬───────────┘ │
-│     │              │              │               │              │
-│  ┌──▼──┐      ┌───▼───┐     ┌───▼───┐      ┌───▼──────┐      │
-│  │Coach│      │Study  │     │Assess │      │Insights  │      │
-│  │Agent│      │Plan   │     │Agent  │      │Agent     │      │
-│  └──┬──┘      └───┬───┘     └───┬───┘      └───┬──────┘      │
-│     │              │              │               │              │
-│  ┌──▼──────────────▼──────────────▼───────────────▼──────────┐  │
-│  │                   Microsoft Foundry IQ                      │  │
-│  │       Knowledge base · Grounded retrieval · Citations       │  │
-│  └─────────────────────────────────────────────────────────────┘  │
-│                                                                   │
-│  Interview pipeline:                                              │
-│  Answer Analyzer ──► Interviewer Agent (adaptive loop)           │
-│                                                                   │
-│  Practice Paper pipeline:                                         │
-│  Assessment Agent ──► CERT_DOMAINS ──► LLM ──► Scorer           │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
+![CertSense AI Architecture](architecture.svg)
 
 ## Agent Breakdown
 
@@ -278,6 +245,37 @@ All data in `/data/` is synthetic and generated for demonstration purposes only.
 | Creativity & Originality | 15% | Adaptive interview that follows up on *your specific words*. Three genuinely distinct learning modes forming a complete study loop. Fresh questions every Practice Paper session. Voice explanation as primary input modality. |
 | User Experience & Presentation | 15% | Live agent stream panel across Analyze, Interview, and Practice Paper. Manager Dashboard with team filter. Score bars, risk badges, study plan timeline, timed mock exam with progress dots. |
 | Reliability & Safety | 20% | Graceful fallback at every external call. Synthetic data only. No PII. Pydantic input/output validation. Non-fatal error paths throughout. Provider-agnostic LLM layer for resilience. |
+
+---
+
+## Deployment Architecture
+
+CertSense AI agents are implemented as Python services running on a FastAPI server. Each agent is a modular Python class orchestrated by the central `OrchestratorAgent`.
+
+**Current deployment:** Local development server (FastAPI + Uvicorn)
+
+**Production path:** Agents are designed to be containerized via Docker and deployed to **Azure Container Apps** for managed scaling and persistent state. The architecture is also compatible with migration to **Microsoft Foundry Hosted Agent Service** for full platform-managed identity, observability, and lifecycle management.
+
+**Foundry IQ grounding:** All agent knowledge retrieval calls are made to the `CertSense-kb` knowledge base hosted on Microsoft Foundry IQ via Azure AI Search. This runs on Microsoft's infrastructure regardless of where the Python agents are deployed.
+
+```
+Local FastAPI ──► Foundry IQ (CertSense-kb) ──► Azure AI Search
+                       ↑
+              All agent grounding calls
+```
+
+**Recommended production deployment:**
+```
+Azure Container Apps
+└── certsense-backend (FastAPI container)
+    ├── Orchestrator Agent
+    ├── Readiness Coach Agent  ──► Foundry IQ (CertSense-kb)
+    ├── Study Plan Agent
+    ├── Assessment Agent       ──► Foundry IQ (CertSense-kb)
+    ├── Insights Agent
+    ├── Interviewer Agent
+    └── Answer Analyzer Agent
+```
 
 ---
 
