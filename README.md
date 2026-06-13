@@ -204,7 +204,7 @@ pip install -r requirements.txt
 Create `backend/.env`:
 ```env
 MODEL_PROVIDER=foundry
-MODEL_NAME=Meta-Llama-3.3-70B-Instruct
+MODEL_NAME=Llama-3.3-70B-Instruct
 FOUNDRY_API_KEY=XXXXXXXXXXX
 FOUNDRY_ENDPOINT=https://your-resource.services.ai.azure.com
 
