@@ -12,11 +12,13 @@ Supported providers (set via MODEL_PROVIDER env var):
     openai      — OpenAI
     openrouter  — OpenRouter
     groq        — Groq
+    foundry     — Azure AI Foundry (OpenAI-compatible Serverless API)
 
-Required .env:
-    MODEL_PROVIDER=gemini
-    MODEL_NAME=gemini-2.5-flash
-    GEMINI_API_KEY=
+Required .env for Azure AI Foundry:
+    MODEL_PROVIDER=foundry
+    MODEL_NAME=Meta-Llama-3.3-70B-Instruct
+    FOUNDRY_API_KEY=<your deployment key>
+    FOUNDRY_ENDPOINT=https://<your-endpoint>.inference.ml.azure.com
 
 To switch provider later, change MODEL_PROVIDER in .env only.
 No agent code needs to change.
@@ -125,11 +127,59 @@ async def _groq_call(
     return await _openai_call(system, user, temperature, max_tokens)
 
 
+async def _foundry_call(
+    system: Optional[str],
+    user: str,
+    temperature: float,
+    max_tokens: int,
+) -> str:
+    """Call Azure AI Foundry Serverless API (OpenAI-compatible).
+
+    Required env vars:
+        FOUNDRY_API_KEY   — the key from your Foundry deployment
+        FOUNDRY_ENDPOINT  — e.g. https://<name>.inference.ml.azure.com
+        MODEL_NAME        — e.g. Meta-Llama-3.3-70B-Instruct
+    """
+    from openai import AsyncOpenAI
+
+    api_key  = os.getenv("FOUNDRY_API_KEY", "")
+    endpoint = os.getenv("FOUNDRY_ENDPOINT", "").rstrip("/")
+
+    if not api_key:
+        raise RuntimeError("FOUNDRY_API_KEY is not set in environment.")
+    if not endpoint:
+        raise RuntimeError("FOUNDRY_ENDPOINT is not set in environment.")
+
+    # Azure Foundry uses /openai/v1 as the base path
+    if endpoint.endswith("/openai/v1"):
+        base_url = endpoint
+    elif endpoint.endswith("/openai"):
+        base_url = f"{endpoint}/v1"
+    else:
+        base_url = f"{endpoint}/openai/v1"
+
+    client = AsyncOpenAI(api_key=api_key, base_url=base_url)
+
+    messages = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": user})
+
+    resp = await client.chat.completions.create(
+        model=_MODEL,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_tokens,
+    )
+    return resp.choices[0].message.content.strip()
+
+
 _PROVIDERS = {
     "gemini":     _gemini_call,
     "openai":     _openai_call,
     "openrouter": _openrouter_call,
     "groq":       _groq_call,
+    "foundry":    _foundry_call,
 }
 
 
