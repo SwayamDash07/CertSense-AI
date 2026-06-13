@@ -1,0 +1,120 @@
+<svg width="100%" viewBox="0 0 680 620" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>CertSense AI architecture diagram</title>
+  <desc>Multi-layer architecture showing the React frontend, FastAPI backend with 7 agents, Microsoft Foundry IQ, and data layer.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      text { font-family: system-ui, sans-serif; fill: #1a1a2e; }
+      .th { font-size: 14px; font-weight: 600; }
+      .ts { font-size: 12px; font-weight: 400; fill: #444466; }
+      .arr { stroke: #888; fill: none; stroke-width: 1; }
+      .frontend rect { fill: #dbeafe; stroke: #3b82f6; }
+      .frontend text { fill: #1e3a8a; }
+      .backend rect { fill: #ede9fe; stroke: #7c3aed; }
+      .backend text { fill: #3b0764; }
+      .orchestrator rect { fill: #ccfbf1; stroke: #0d9488; }
+      .orchestrator text { fill: #134e4a; }
+      .agent rect { fill: #f1f5f9; stroke: #94a3b8; }
+      .agent text { fill: #1e293b; }
+      .critic rect { fill: #ffe4e6; stroke: #f43f5e; }
+      .critic text { fill: #881337; }
+      .foundry rect { fill: #fef3c7; stroke: #d97706; }
+      .foundry text { fill: #78350f; }
+      .data rect { fill: #dcfce7; stroke: #16a34a; }
+      .data text { fill: #14532d; }
+    </style>
+  </defs>
+
+  <!-- Frontend layer -->
+  <g class="frontend">
+    <rect x="40" y="30" width="600" height="72" rx="10" stroke-width="1"/>
+    <text class="th" x="340" y="58" text-anchor="middle">React frontend</text>
+    <text class="ts" x="340" y="76" text-anchor="middle">Analyze · Practice Paper · Interview · Manager · Progress</text>
+  </g>
+
+  <!-- Arrows: frontend to backend -->
+  <line x1="240" y1="102" x2="240" y2="138" class="arr" marker-end="url(#arrow)"/>
+  <text class="ts" x="183" y="124" text-anchor="middle" fill="#666">REST</text>
+  <line x1="340" y1="102" x2="340" y2="138" class="arr" marker-end="url(#arrow)"/>
+  <text class="ts" x="340" y="124" text-anchor="middle" fill="#666">WebSocket</text>
+  <line x1="440" y1="102" x2="440" y2="138" class="arr" marker-end="url(#arrow)"/>
+
+  <!-- Backend container -->
+  <g class="backend">
+    <rect x="40" y="138" width="600" height="268" rx="10" stroke-width="1"/>
+    <text class="th" x="340" y="162" text-anchor="middle">FastAPI backend</text>
+  </g>
+
+  <!-- Orchestrator -->
+  <g class="orchestrator">
+    <rect x="220" y="178" width="240" height="44" rx="8" stroke-width="1"/>
+    <text class="th" x="340" y="196" text-anchor="middle">Orchestrator</text>
+    <text class="ts" x="340" y="213" text-anchor="middle">Routes · streams · aggregates</text>
+  </g>
+
+  <!-- Arrows: orchestrator to agents -->
+  <line x1="260" y1="222" x2="108" y2="268" class="arr" marker-end="url(#arrow)"/>
+  <line x1="290" y1="222" x2="218" y2="268" class="arr" marker-end="url(#arrow)"/>
+  <line x1="320" y1="222" x2="328" y2="268" class="arr" marker-end="url(#arrow)"/>
+  <line x1="370" y1="222" x2="438" y2="268" class="arr" marker-end="url(#arrow)"/>
+  <line x1="420" y1="222" x2="548" y2="268" class="arr" marker-end="url(#arrow)"/>
+
+  <!-- Agent row -->
+  <g class="agent">
+    <rect x="58" y="268" width="100" height="48" rx="6" stroke-width="1"/>
+    <text class="th" x="108" y="289" text-anchor="middle">Readiness</text>
+    <text class="ts" x="108" y="306" text-anchor="middle">Coach</text>
+  </g>
+  <g class="agent">
+    <rect x="168" y="268" width="100" height="48" rx="6" stroke-width="1"/>
+    <text class="th" x="218" y="289" text-anchor="middle">Study Plan</text>
+    <text class="ts" x="218" y="306" text-anchor="middle">Agent</text>
+  </g>
+  <g class="agent">
+    <rect x="278" y="268" width="100" height="48" rx="6" stroke-width="1"/>
+    <text class="th" x="328" y="289" text-anchor="middle">Assessment</text>
+    <text class="ts" x="328" y="306" text-anchor="middle">Agent</text>
+  </g>
+  <g class="agent">
+    <rect x="388" y="268" width="100" height="48" rx="6" stroke-width="1"/>
+    <text class="th" x="438" y="289" text-anchor="middle">Insights</text>
+    <text class="ts" x="438" y="306" text-anchor="middle">Agent</text>
+  </g>
+  <g class="agent">
+    <rect x="498" y="268" width="100" height="48" rx="6" stroke-width="1"/>
+    <text class="th" x="548" y="289" text-anchor="middle">Interviewer</text>
+    <text class="ts" x="548" y="306" text-anchor="middle">Agent</text>
+  </g>
+
+  <!-- Answer Analyzer critic loop -->
+  <g class="critic">
+    <rect x="168" y="336" width="320" height="44" rx="6" stroke-width="1"/>
+    <text class="th" x="328" y="354" text-anchor="middle">Answer Analyzer</text>
+    <text class="ts" x="328" y="371" text-anchor="middle">Critic loop · extracts gaps · feeds Interviewer</text>
+  </g>
+
+  <!-- Arrows agents to Foundry IQ -->
+  <line x1="108" y1="316" x2="108" y2="430" class="arr" marker-end="url(#arrow)"/>
+  <line x1="328" y1="316" x2="328" y2="430" class="arr" marker-end="url(#arrow)"/>
+  <line x1="548" y1="316" x2="548" y2="430" class="arr" marker-end="url(#arrow)"/>
+
+  <!-- Foundry IQ layer -->
+  <g class="foundry">
+    <rect x="40" y="430" width="600" height="54" rx="10" stroke-width="1"/>
+    <text class="th" x="340" y="452" text-anchor="middle">Microsoft Foundry IQ</text>
+    <text class="ts" x="340" y="470" text-anchor="middle">CertSense-kb · Azure AI Search · grounded retrieval · citations</text>
+  </g>
+
+  <!-- Arrow Foundry IQ to data layer -->
+  <line x1="340" y1="484" x2="340" y2="516" class="arr" marker-end="url(#arrow)"/>
+
+  <!-- Data layer -->
+  <g class="data">
+    <rect x="40" y="516" width="600" height="72" rx="10" stroke-width="1"/>
+    <text class="th" x="340" y="538" text-anchor="middle">Synthetic data layer</text>
+    <text class="ts" x="340" y="556" text-anchor="middle">learner_performance · work_activity_signals · fabric_iq_semantic_model</text>
+    <text class="ts" x="340" y="574" text-anchor="middle">engineering_certification_guide · team_learning_report</text>
+  </g>
+</svg>
