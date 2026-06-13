@@ -111,17 +111,10 @@ CertSense AI uses a provider-agnostic LLM abstraction layer (`services/llm.py`).
 **Secondary (agent orchestration & grounding):**
 - Microsoft Azure AI Foundry — Phi-4 (via `FOUNDRY_MODEL_DEPLOYMENT`)
 
-**Compatible with any OpenAI-compatible API**, including:
-- Google Gemini (via OpenAI-compatible endpoint)
-- Mistral
-- Together AI
-- Ollama (local models)
-- Any provider exposing an OpenAI-compatible `/v1/chat/completions` endpoint
-
-To switch providers, update your `.env`:
+To configure, update your `.env`:
 ```env
-MODEL_PROVIDER=foundry                        # or: openai, gemini, groq
-MODEL_NAME=Meta-Llama-3.3-70B-Instruct        # or: phi-4, gemini-1.5-pro, etc.
+MODEL_PROVIDER=foundry
+MODEL_NAME=Llama-3.3-70B-Instruct
 FOUNDRY_API_KEY=your-foundry-key
 FOUNDRY_ENDPOINT=https://your-resource.services.ai.azure.com
 ```
@@ -204,7 +197,7 @@ pip install -r requirements.txt
 Create `backend/.env`:
 ```env
 MODEL_PROVIDER=foundry
-MODEL_NAME=Llama-3.3-70B-Instruct
+MODEL_NAME=Meta-Llama-3.3-70B-Instruct
 FOUNDRY_API_KEY=XXXXXXXXXXX
 FOUNDRY_ENDPOINT=https://your-resource.services.ai.azure.com
 
