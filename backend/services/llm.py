@@ -1,26 +1,29 @@
+ · PY
 """
 Provider-agnostic LLM service for CertSense AI.
-
+ 
 Usage in every agent:
     from services.llm import LLM
     self.llm = LLM()
     text = await self.llm.complete("your prompt")
     text = await self.llm.chat(system="...", user="...")
-
-Supported providers (set via MODEL_PROVIDER env var):
-    gemini      — Google Gemini (default, free tier)
-    openai      — OpenAI
+ 
+Active provider: Azure AI Foundry (Microsoft)
+    foundry     — Azure AI Foundry Serverless API (primary, Llama 3.3 70B Instruct)
+ 
+Additional providers supported for local development and testing:
+    openai      — OpenAI-compatible endpoints
+    gemini      — Google Gemini
     openrouter  — OpenRouter
     groq        — Groq
-    foundry     — Azure AI Foundry (OpenAI-compatible Serverless API)
-
-Required .env for Azure AI Foundry:
+ 
+Required .env:
     MODEL_PROVIDER=foundry
     MODEL_NAME=Meta-Llama-3.3-70B-Instruct
     FOUNDRY_API_KEY=<your deployment key>
-    FOUNDRY_ENDPOINT=https://<your-endpoint>.inference.ml.azure.com
-
-To switch provider later, change MODEL_PROVIDER in .env only.
+    FOUNDRY_ENDPOINT=https://<your-resource>.services.ai.azure.com
+ 
+To switch provider, change MODEL_PROVIDER in .env only.
 No agent code needs to change.
 """
 
