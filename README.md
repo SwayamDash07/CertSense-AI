@@ -74,7 +74,7 @@ Every analysis and interview session is logged and tracked over time. Readiness 
 
 ## Architecture
 
-![CertSense AI Architecture](architecture.svg)
+![CertSense AI Architecture](assets/architecture.svg)
 
 ## Agent Breakdown
 
