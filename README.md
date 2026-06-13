@@ -105,9 +105,11 @@ Every LLM call for the Coach and Assessment agents includes Foundry IQ retrieved
 
 CertSense AI uses a provider-agnostic LLM abstraction layer (`services/llm.py`). The active provider is configured via environment variables and can be swapped without changing any agent code.
 
-**Tested with:**
-- Groq — Llama 3.3 70B Versatile (primary, fast inference)
-- Microsoft Azure AI Foundry — Phi-4
+**Primary:**
+- Microsoft Azure AI Foundry — Llama 3.3 70B Instruct (via Serverless API)
+
+**Secondary (agent orchestration & grounding):**
+- Microsoft Azure AI Foundry — Phi-4 (via `FOUNDRY_MODEL_DEPLOYMENT`)
 
 **Compatible with any OpenAI-compatible API**, including:
 - Google Gemini (via OpenAI-compatible endpoint)
@@ -118,10 +120,10 @@ CertSense AI uses a provider-agnostic LLM abstraction layer (`services/llm.py`).
 
 To switch providers, update your `.env`:
 ```env
-MODEL_PROVIDER=groq                     # or: foundry, openai, gemini
-MODEL_NAME=llama-3.3-70b-versatile      # or: phi-4, gemini-1.5-pro, etc.
-LLM_API_KEY=your-api-key
-LLM_BASE_URL=https://api.groq.com/openai/v1   # override for custom endpoints
+MODEL_PROVIDER=foundry                        # or: openai, gemini, groq
+MODEL_NAME=Meta-Llama-3.3-70B-Instruct        # or: phi-4, gemini-1.5-pro, etc.
+FOUNDRY_API_KEY=your-foundry-key
+FOUNDRY_ENDPOINT=https://your-resource.services.ai.azure.com
 ```
 
 ---
@@ -188,7 +190,7 @@ certsense-ai/
 - Python 3.10+
 - Node.js 18+
 - Azure subscription with Microsoft Foundry project configured
-- Groq API key (or any compatible LLM provider)
+- Azure AI Foundry deployment of `Meta-Llama-3.3-70B-Instruct` (Serverless API)
 
 ### Backend
 ```bash
@@ -201,14 +203,14 @@ pip install -r requirements.txt
 
 Create `backend/.env`:
 ```env
-MODEL_PROVIDER=groq
-MODEL_NAME=llama-3.3-70b-versatile
-GROQ_API_KEY=XXXXXXXXXX
-
+MODEL_PROVIDER=foundry
+MODEL_NAME=Meta-Llama-3.3-70B-Instruct
 FOUNDRY_API_KEY=XXXXXXXXXXX
-FOUNDRY_PROJECT_ENDPOINT=https://certsenseai-resource.services.ai.azure.com/api/projects/certsenseai
-AZURE_OPENAI_ENDPOINT=https://certsenseai-resource.openai.azure.com/openai/v1
-FOUNDRY_KNOWLEDGE_BASE=certSense-kb
+FOUNDRY_ENDPOINT=https://your-resource.services.ai.azure.com
+
+FOUNDRY_PROJECT_ENDPOINT=https://your-resource.services.ai.azure.com/api/projects/your-project
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/openai/v1
+FOUNDRY_KNOWLEDGE_BASE=CertSense-kb
 FOUNDRY_MODEL_DEPLOYMENT=Phi-4
 ```
 
@@ -281,9 +283,9 @@ Azure Container Apps
 
 ## Built With
 
-- **Groq (Llama 3.3 70B Versatile)** — Primary LLM inference for agent reasoning
+- **Microsoft Azure AI Foundry — Llama 3.3 70B Instruct** — Primary LLM inference for agent reasoning (Serverless API)
+- **Microsoft Azure AI Foundry — Phi-4** — Secondary LLM for orchestration and grounding
 - **Microsoft Azure AI Foundry** — Agent orchestration, Foundry IQ knowledge grounding, session logging
-- - **Phi-4** — Secondary LLM via Azure AI Foundry (swappable via `MODEL_PROVIDER`)
 - **FastAPI** — Backend REST + WebSocket API
 - **React + Vite** — Frontend
 - **Azure AI Search** — Session persistence via Foundry IQ client
