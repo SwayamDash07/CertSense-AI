@@ -36,7 +36,31 @@ Every interview session opens with a cert-anchored question randomly selected fr
 ### Manager Dashboard
 Team-level certification readiness across all learners, with workload risk signals — so managers know *why* someone is behind, not just *that* they are.
 
+### Progress Tracking
+Every analysis and interview session is logged and tracked over time. Readiness scores update in real time as you complete sessions — so you can see whether you're improving across AZ-204, AZ-400, or DP-203 before exam day.
+
 ---
+## Screenshots
+
+### Analyze Mode — Live Agent Stream
+![Analyze Mode](assets/analyzer.png)
+
+### Practice Paper — Timed Mock Exam
+![Practice Paper](assets/practicepaper.png)
+
+### Interview Mode — Opening Question (Round 1)
+![Interview Round 1](assets/interview1.png)
+
+### Interview Mode — Adaptive Follow-up (Round 2)
+> The Answer Analyzer extracted claims from your previous answer. The Interviewer selected a follow-up strategy and drilled into exactly what you said.
+
+![Interview Round 2](assets/interview2.png)
+
+### Manager Dashboard — Team Readiness & Work IQ Signals
+![Manager Dashboard](assets/manager.png)
+
+### Progress Tracking — Readiness Over Time
+![Progress Tracking](assets/progress.png)
 
 ## Supported Certifications
 
