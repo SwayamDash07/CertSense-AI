@@ -62,7 +62,7 @@ const css = `
     position:fixed;
     inset:0;
     background-image:
-      linear-gradient(rgba(29,108,240,.03) 1px, transparent 1px),
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
       linear-gradient(90deg, rgba(29,108,240,.03) 1px, transparent 1px);
     background-size:40px 40px;
     pointer-events:none;
@@ -184,6 +184,7 @@ const css = `
     grid-template-columns:256px 1fr;
     overflow:hidden;
     height:calc(100vh - 58px);
+    min-height:0;
   }
 
   /* ── Sidebar ──────────────────────────────────────────────── */
@@ -326,7 +327,8 @@ const css = `
     border-bottom:1px solid var(--border);
     background:linear-gradient(180deg, rgba(4,15,32,.8) 0%, transparent 100%);
     position:relative;
-    overflow:hidden;
+    overflow:visible;
+    flex-shrink:0;
     animation:hero-in .5s ease both;
   }
   .hero::before{
