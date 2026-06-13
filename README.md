@@ -106,18 +106,10 @@ Every LLM call for the Coach and Assessment agents includes Foundry IQ retrieved
 CertSense AI uses a provider-agnostic LLM abstraction layer (`services/llm.py`). The active provider is configured via environment variables and can be swapped without changing any agent code.
 
 **Primary:**
-- Microsoft Azure AI Foundry — Llama 3.3 70B Instruct (via Serverless API)
+- Microsoft Azure AI Foundry — Llama 3.3 70B Instruct (GlobalStandard)
 
 **Secondary (agent orchestration & grounding):**
-- Microsoft Azure AI Foundry — Phi-4 (via `FOUNDRY_MODEL_DEPLOYMENT`)
-
-To configure, update your `.env`:
-```env
-MODEL_PROVIDER=foundry
-MODEL_NAME=Llama-3.3-70B-Instruct
-FOUNDRY_API_KEY=your-foundry-key
-FOUNDRY_ENDPOINT=https://your-resource.services.ai.azure.com
-```
+- Microsoft Azure AI Foundry — Phi-4 (GlobalStandard)
 
 ---
 
@@ -126,6 +118,7 @@ FOUNDRY_ENDPOINT=https://your-resource.services.ai.azure.com
 ```
 certsense-ai/
 ├── backend/
+│   ├── .env.example                   # Environment variable template
 │   ├── main.py                        # FastAPI app, CORS, WebSocket
 │   ├── agents/
 │   │   ├── answer_analyzer.py         # Interview answer intelligence extraction
@@ -183,7 +176,8 @@ certsense-ai/
 - Python 3.10+
 - Node.js 18+
 - Azure subscription with Microsoft Foundry project configured
-- Azure AI Foundry deployment of `Meta-Llama-3.3-70B-Instruct` (Serverless API)
+- Azure AI Foundry deployment of `Llama-3.3-70B-Instruct` (GlobalStandard)
+- Azure AI Foundry deployment of `Phi-4` (GlobalStandard)
 
 ### Backend
 ```bash
@@ -194,18 +188,11 @@ source .venv/bin/activate        # Mac/Linux
 pip install -r requirements.txt
 ```
 
-Create `backend/.env`:
-```env
-MODEL_PROVIDER=foundry
-MODEL_NAME=Meta-Llama-3.3-70B-Instruct
-FOUNDRY_API_KEY=XXXXXXXXXXX
-FOUNDRY_ENDPOINT=https://your-resource.services.ai.azure.com
-
-FOUNDRY_PROJECT_ENDPOINT=https://your-resource.services.ai.azure.com/api/projects/your-project
-AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/openai/v1
-FOUNDRY_KNOWLEDGE_BASE=CertSense-kb
-FOUNDRY_MODEL_DEPLOYMENT=Phi-4
+Copy the example env file and fill in your credentials:
+```bash
+cp backend/.env.example backend/.env
 ```
+Then edit `backend/.env` with your Azure AI Foundry details.
 
 ```bash
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
@@ -276,8 +263,8 @@ Azure Container Apps
 
 ## Built With
 
-- **Microsoft Azure AI Foundry — Llama 3.3 70B Instruct** — Primary LLM inference for agent reasoning (Serverless API)
-- **Microsoft Azure AI Foundry — Phi-4** — Secondary LLM for orchestration and grounding
+- **Microsoft Azure AI Foundry — Llama 3.3 70B Instruct** — Primary LLM inference for agent reasoning (GlobalStandard)
+- **Microsoft Azure AI Foundry — Phi-4** — Secondary LLM for orchestration and grounding (GlobalStandard)
 - **Microsoft Azure AI Foundry** — Agent orchestration, Foundry IQ knowledge grounding, session logging
 - **FastAPI** — Backend REST + WebSocket API
 - **React + Vite** — Frontend
