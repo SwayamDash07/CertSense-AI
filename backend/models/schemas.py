@@ -14,7 +14,7 @@ class AnalysisRequest(BaseModel):
     goal: str = Field(..., description="AZ-204 | AZ-400 | DP-203")
     transcript: Optional[str] = None
     audio_data: Optional[bytes] = None
-    metadata: Optional[Dict[str, Any]] = {}
+    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
 
 
 class AgentEvent(BaseModel):
@@ -41,4 +41,4 @@ class TranscriptRequest(BaseModel):
     user_id: Optional[str] = None
     goal: str
     transcript: str
-    metadata: Optional[Dict[str, Any]] = {}
+    metadata: Optional[Dict[str, Any]] = Field(default_factory=dict)
