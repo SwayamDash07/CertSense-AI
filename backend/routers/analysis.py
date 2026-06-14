@@ -3,7 +3,7 @@ Analysis Router — REST endpoints for communication analysis.
 """
 
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import uuid, json, random
 import traceback
@@ -91,8 +91,8 @@ class InterviewNextRequest(BaseModel):
     goal: str = "AZ-204"
     round_number: int
     max_rounds: int = 5
-    history: List[dict] = []
-    memory: dict = {}
+    history: List[dict] = Field(default_factory=list)
+    memory: dict = Field(default_factory=dict)
 
 
 class InterviewFinalRequest(BaseModel):
