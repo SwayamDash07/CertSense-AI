@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
-const API = "http://localhost:8000";
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
 
 const CERTS = [
   { id: "AZ-204", label: "AZ-204", name: "Azure Developer", color: "#3b82f6", badge: "DEV" },
@@ -1343,7 +1343,7 @@ function InsightsView({ data }) {
             <div style={{ background: "var(--bg3)", border: "1px solid var(--border)", borderRadius: "8px", padding: ".875rem" }}>
               <div style={{ fontSize: ".6rem", fontFamily: "var(--mono)", color: "var(--text3)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: ".375rem" }}>Trend</div>
               <div style={{ fontSize: ".95rem", fontWeight: 700, fontFamily: "var(--mono)", color: trendDir === "up" ? "var(--green)" : trendDir === "down" ? "var(--red)" : "var(--amber)", textTransform: "capitalize" }}>
-                {typeof trend === "string" ? trend : trend} {trendPct ? `+${trendPct}%` : ""}
+                {typeof trend === "string" ? trend : trend} {trendPct ? `${trendDir === "down" ? "-" : "+"}${Math.abs(trendPct)}%` : ""}
               </div>
             </div>
           )}
@@ -1397,7 +1397,7 @@ function ResultView({ result, cert }) {
           <div className="score-grid">
             <ScoreCard label="Overall Readiness" value={score} accent="var(--blue2)" />
             <ScoreCard label="Technical Depth" value={comm.technical_depth ?? comm.score ?? score * 0.9} accent="var(--purple)" />
-            <ScoreCard label="Concept Coverage" value={comm.concept_coverage ?? comm.clarity ?? score * 1.05 > 10 ? 9.2 : score * 1.05} accent="var(--cyan)" />
+            <ScoreCard label="Concept Coverage" value={comm.concept_coverage ?? comm.clarity ?? (score * 1.05 > 10 ? 9.2 : score * 1.05)} accent="var(--cyan)" />
           </div>
           {result.final_recommendation && (
             <div>
@@ -1493,7 +1493,7 @@ function InterviewMode({ cert }) {
         else interim += e.results[i][0].transcript;
       }
       setTranscript(prev => prev + final);
-      setAnswer(prev => (prev + final) || interim);
+      setAnswer(prev => (prev + final) || interim || prev);
     };
     rec.onerror = () => setListening(false);
     rec.onend = () => setListening(false);
@@ -1566,7 +1566,7 @@ function InterviewMode({ cert }) {
       const strategy = d.strategy ? ` [${d.strategy}]` : "";
       setQuestion(d.question || d.next_question || "Continue explaining your approach.");
       setMemory(d.memory || memory);
-      setRound(r => r + 1);
+      setRound(prev => prev + 1);
       setStreamEvents(e => [...e, { agent: "interviewer", status: "done", message: `Round ${round + 1} ready${strategy}` }]);
     } catch {
       setStreamEvents(e => [...e, { agent: "interviewer", status: "error", message: "Request failed" }]);
@@ -1835,11 +1835,6 @@ function PracticePaper({ cert, onGotoStudyPlan }) {
   // ── Config screen ────────────────────────────────────────────────────────
   if (stage === "config") return (
     <div>
-      <div className="hero">
-        <div className="hero-eyebrow">Practice Paper · {cert}</div>
-        <div className="hero-title">Timed <em>mock exam</em></div>
-        <div className="hero-sub">AI-generated questions grounded in Foundry IQ knowledge base. New questions generated every time.</div>
-      </div>
       <div className="paper-config">
         {error && <div style={{ fontSize: ".75rem", color: "var(--red)", fontFamily: "var(--mono)", padding: ".625rem .875rem", background: "rgba(239,68,68,.08)", border: "1px solid rgba(239,68,68,.2)", borderRadius: "6px" }}>{error}</div>}
 
@@ -2196,7 +2191,7 @@ export default function App() {
 
   const selectedCert = CERTS.find(c => c.id === cert);
 
-  function connectWS() {
+  function connectWS(onComplete) {
     const ws = new WebSocket(`${API.replace("http", "ws")}/ws/analysis/${sessionId.current}`);
     ws.onmessage = (e) => {
       try {
@@ -2208,6 +2203,9 @@ export default function App() {
           message: ev.data?.message || "",
           data:    ev.data    || {},
         }]);
+        if (ev.agent === "orchestrator" && ev.status === "completed" && ev.data?.result) {
+          onComplete?.(ev.data.result);
+        }
       } catch {}
     };
     ws.onerror = () => {
@@ -2225,23 +2223,51 @@ export default function App() {
       { agent: "orchestrator", status: "started", message: "Connecting to agent pipeline...", data: {} },
       { agent: "readiness_coach", status: "thinking", message: `Evaluating ${cert} concept coverage and depth...`, data: {} },
     ]);
-    const ws = connectWS();
-
-    // give WS time to open then send the payload so backend streams thinking
-    await new Promise(r => setTimeout(r, 400));
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ goal: cert, transcript, session_id: sessionId.current }));
-    }
-
     try {
       let res;
       if (mode === "text") {
-        const r = await fetch(`${API}/api/analysis/transcript`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ goal: cert, transcript, session_id: sessionId.current })
-        });
-        const d = await r.json();
-        res = d.result;
+        try {
+          res = await new Promise((resolve, reject) => {
+            const ws = connectWS(resolve);
+            const timeout = setTimeout(() => reject(new Error("Agent stream timed out")), 120000);
+            const cleanupResolve = (value) => {
+              clearTimeout(timeout);
+              resolve(value);
+            };
+            ws.onmessage = (e) => {
+              try {
+                const ev = JSON.parse(e.data);
+                setStreamEvents(prev => [...prev, {
+                  agent:   ev.agent   || "agent",
+                  status:  ev.status  || "thinking",
+                  message: ev.data?.message || "",
+                  data:    ev.data    || {},
+                }]);
+                if (ev.agent === "orchestrator" && ev.status === "completed" && ev.data?.result) {
+                  cleanupResolve(ev.data.result);
+                }
+              } catch {}
+            };
+            ws.onerror = () => {
+              clearTimeout(timeout);
+              reject(new Error("WebSocket connection failed"));
+            };
+            ws.onopen = () => ws.send(JSON.stringify({ goal: cert, transcript, session_id: sessionId.current }));
+          });
+        } catch (streamErr) {
+          setStreamEvents(prev => [...prev, {
+            agent: "system",
+            status: "fallback",
+            message: `${streamErr.message}; using REST analysis instead`,
+            data: {},
+          }]);
+          const r = await fetch(`${API}/api/analysis/transcript`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ goal: cert, transcript, session_id: sessionId.current })
+          });
+          const d = await r.json();
+          res = d.result;
+        }
       } else {
         const fd = new FormData();
         fd.append("goal", cert);
@@ -2261,7 +2287,7 @@ export default function App() {
           date: new Date().toLocaleDateString([], { month: "short", day: "numeric" }),
           mode: mode === "text" ? "Text Analysis" : "Audio Analysis",
           strengths: res.communication_analysis?.strengths?.slice(0, 2) || [],
-          gaps: res.communication_analysis?.gaps?.slice(0, 2) || [],
+          gaps: res.communication_analysis?.weaknesses?.slice(0, 2) || [],
           recommendation: res.final_recommendation?.slice(0, 120) || "",
         }]);
         sessionId.current = Math.random().toString(36).slice(2); // fresh id for next session
