@@ -23,6 +23,7 @@ You are an Azure certification exam question writer.
 
 Certification target: {cert_track}
 Candidate profile: {coach_summary}
+Foundry IQ context: {context_summary}
 
 Generate exactly 5 exam-style questions with difficulty progression:
   Q1 — Recall: definition or basic concept
@@ -44,6 +45,7 @@ You are an Azure certification examiner evaluating a candidate's answer.
 Certification: {cert_track}
 Question ({difficulty}): {question}
 Candidate answer: {answer_excerpt}
+Foundry IQ context: {context_summary}
 
 Score 1-10 on each dimension:
   - accuracy: Is the technical content correct?
@@ -194,10 +196,25 @@ class AssessmentAgent:
     async def _evaluate_cert(self, coach_output: dict, goal: str, workflow: dict) -> dict:
         cert_track = workflow.get("focus", goal.upper())
 
-        q_raw = await self.llm.complete_json(
-            _QUESTION_GEN_PROMPT.format(cert_track=cert_track, coach_summary=_coach_summary(coach_output))
+        context = await self.foundry_iq.get_context(
+            query=f"{cert_track} exam assessment questions for weak areas",
+            domains=["certification", "azure", cert_track],
         )
-        questions = safe_json(q_raw, default=None)
+        context_summary = _context_summary(context)
+
+        try:
+            q_raw = await self.llm.complete_json(
+                _QUESTION_GEN_PROMPT.format(
+                    cert_track=cert_track,
+                    coach_summary=_coach_summary(coach_output),
+                    context_summary=context_summary,
+                )
+            )
+            questions = safe_json(q_raw, default=None)
+        except Exception as exc:
+            logger.warning("Question generation failed, using fallback: %s", exc)
+            questions = None
+
         if not isinstance(questions, list):
             questions = self._fallback_questions(cert_track)
 
@@ -215,10 +232,15 @@ class AssessmentAgent:
             else:
                 clean_evals.append(ev)
 
-        syn_raw = await self.llm.complete_json(
-            _SYNTHESIS_PROMPT.format(cert_track=cert_track, evaluations_json=json.dumps(clean_evals, indent=2))
-        )
-        synthesis = safe_json(syn_raw, default={})
+        try:
+            syn_raw = await self.llm.complete_json(
+                _SYNTHESIS_PROMPT.format(cert_track=cert_track, evaluations_json=json.dumps(clean_evals, indent=2))
+            )
+            synthesis = safe_json(syn_raw, default={})
+        except Exception as exc:
+            logger.warning("Assessment synthesis failed, using fallback: %s", exc)
+            synthesis = {}
+
         if not synthesis:
             synthesis = self._fallback_synthesis(clean_evals)
 
@@ -264,18 +286,33 @@ class AssessmentAgent:
             "mock_assessment": self._build_mock_assessment(cert_track, questions),
             "gaps_to_close": synthesis.get("cross_answer_weaknesses", []),
             "rubric": rubric,
+            "grounding": {
+                "iq_layer": "Foundry IQ",
+                "query": f"{cert_track} exam assessment questions for weak areas",
+                "sources": context.get("sources", []) if isinstance(context, dict) else [],
+                "used_for": "Assessment question generation and answer evaluation",
+            },
         }
 
     async def _evaluate_single_answer(self, question: dict, coach_output: dict, idx: int, total: int, cert_track: str) -> dict:
+        context = await self.foundry_iq.get_context(
+            query=f"{cert_track} answer evaluation for {question.get('skill_area', 'core skills')}",
+            domains=["certification", "azure", cert_track],
+        )
         prompt = _EVAL_PROMPT.format(
             cert_track=cert_track,
             difficulty=question.get("difficulty", "application"),
             question=question.get("question", ""),
             answer_excerpt=_answer_excerpt(coach_output, idx, total),
+            context_summary=_context_summary(context),
         )
-        raw = await self.llm.complete_json(prompt)
-        result = safe_json(raw, default={})
-        return result if result else self._fallback_eval(question)
+        try:
+            raw = await self.llm.complete_json(prompt)
+            result = safe_json(raw, default={})
+            return result if result else self._fallback_eval(question)
+        except Exception as exc:
+            logger.warning("Single answer evaluation failed, using fallback: %s", exc)
+            return self._fallback_eval(question)
 
     async def _generate_practice_questions(self, coach_output, goal, base_questions, context):
         cert_track = goal.upper()
