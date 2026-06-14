@@ -92,7 +92,7 @@ Every analysis and interview session is logged and tracked over time. Readiness 
 
 ## Microsoft IQ Integration
 
-### Foundry IQ — Fully Integrated
+### Foundry IQ — Live Integration
 Every LLM call for the Coach and Assessment agents includes Foundry IQ retrieved context from the `CertSense-kb` knowledge base. Agents cite sources rather than free-generating answers. Sessions are persisted to Azure AI Search via `FoundryIQClient`. Graceful fallback to in-process knowledge base if the API is unavailable — agents never fail silently.
 
 **Knowledge sources indexed:**
@@ -104,6 +104,14 @@ Every LLM call for the Coach and Assessment agents includes Foundry IQ retrieved
 
 ### Work IQ — Work Activity Signals (Simulated)
 `data/work_activity_signals.json` simulates Work IQ organisational signals: meeting hours, focus hours, preferred learning slots, and workload risk classification per employee. Surfaced in the Manager Dashboard to explain *why* learners are at risk, not just *that* they are. Designed to reflect the kind of signals a live Work IQ integration would provide.
+
+### IQ Evidence Summary
+
+| Layer | Status | Used By | Evidence |
+|---|---|---|---|
+| Foundry IQ | Live integration | Readiness Coach, Assessment | `backend/services/foundry_iq.py`, `CertSense-kb`, `engineering_certification_guide.md`, `team_learning_report.md` |
+| Fabric IQ-style model | Synthetic simulation | Study Plan, Manager Dashboard | `data/fabric_iq_semantic_model.json` |
+| Work IQ-style signals | Synthetic simulation | Manager Dashboard, Insights | `data/work_activity_signals.json` |
 
 ---
 
